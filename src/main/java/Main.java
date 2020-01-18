@@ -1,11 +1,61 @@
+import GameManager.GameManagerImpl;
+import GameManager.IGameManager;
+import Models.GameStage;
+import Player.IPlayer;
+import Player.PlayerFactory;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
     final static Logger logger = Logger.getLogger(Main.class);
 
-    public static void main(String[] args) {
-        logger.debug("aaaaaaaaaaaa");
-        System.out.println("aaaaaaaaaaaaaaaaa");
+    // ---------------------
+    // Temp  implementation
+    // ---------------------
+
+    public Main() throws IOException {
+        ServerSocket ss = new ServerSocket(8888);
+        System.out.println("Server is up!");
+
+        boolean run = true;
+
+        while (run) {
+            int id = 1;
+
+            Socket socket = ss.accept();
+            PlayerFactory playerFactory = new PlayerFactory();
+
+            Map<Integer, IPlayer> players = new HashMap<>();
+
+            IPlayer player1 = playerFactory.getPlayer(socket, id);
+
+            players.put(id, player1);
+
+            IGameManager gameManager = new GameManagerImpl(players, getGameStages());
+            gameManager.startGame();
+
+        }
+    }
+
+
+    static List<GameStage> getGameStages(){
+        ArrayList<GameStage> qs = new ArrayList<>();
+
+        List<String> pAnswers = new ArrayList<>();
+        pAnswers.add("1");
+        pAnswers.add("2");
+        GameStage gameStage = new GameStage("1+1",pAnswers,"2");
+
+        qs.add(gameStage);
+
+        return qs;
     }
 }
