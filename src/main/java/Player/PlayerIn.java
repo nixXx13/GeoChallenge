@@ -1,9 +1,8 @@
 package Player;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import static Utils.ConnectionUtils.readObjectInputStream;
+import static Common.ConnectionUtils.readObjectInputStream;
 
 public class PlayerIn {
 

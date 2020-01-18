@@ -1,4 +1,4 @@
-package Models;
+package Common;
 
 import java.util.List;
 
@@ -20,6 +20,10 @@ public class GameStage {
 
     public String getQuestion(){
         return question;
+    }
+
+    public String getAnswer() {
+        return answer;
     }
 }
 

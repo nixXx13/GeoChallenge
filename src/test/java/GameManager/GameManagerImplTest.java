@@ -1,7 +1,8 @@
 package GameManager;
 
-import Models.GameStage;
+import Common.GameStage;
 import Player.IPlayer;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GameManagerImplTest {
 
-    // TODO - remove tests package from jar
+    final static Logger logger = Logger.getLogger(GameManagerImplTest.class);
 
     private GameManagerImpl gameManager;
     private HashMap<Integer,IPlayer> players;
@@ -27,6 +28,7 @@ class GameManagerImplTest {
 
     @org.junit.jupiter.api.Test
     void OnePlayerTest() throws InterruptedException {
+        logger.info("=========== Starting test OnePlayerTest");
         int playerId1 = 11;
 
         gameStages = new ArrayList<>();
@@ -44,6 +46,7 @@ class GameManagerImplTest {
 
     @org.junit.jupiter.api.Test
     void TwoPlayersTest() throws InterruptedException {
+        logger.info("=========== Starting test TwoPlayersTest");
         int playerId1 = 11;
         int playerId2 = 22;
 
@@ -81,19 +84,20 @@ class GameManagerImplTest {
 
             @Override
             public void init(IGameManager gameManager, List<GameStage> gameStages) {
-                System.out.println(String.format("player %d started",playerId));
+                logger.debug(String.format("player %d started",playerId));
                 this.gameManager = gameManager;
 
             }
 
+
             @Override
-            public void end(UpdateType type, String update) {
-                System.out.println(String.format("[DEBUG} - received end from game manager - '%s'",update));
+            public void end(String update) {
+                logger.debug(String.format("received end from game manager - '%s'",update));
 
                 String updateMsg = String.format(MSG_END,playerId);
                 if (updateMsg.equals(update)) {
                     validGameEnd = true;
-                    System.out.println(String.format("[DEBUG} - received end update is correct"));
+                    logger.debug(String.format("received end update is correct"));
                 }
             }
 
@@ -114,25 +118,22 @@ class GameManagerImplTest {
             }
 
             @Override
-            public void addScore(float newGrade) {
-                System.out.println("adding score " + newGrade);
+            public void grade(float newGrade) {
+                logger.debug(String.format("adding score " + newGrade));
                 score+=newGrade;
             }
 
 
             @Override
-            public void update(UpdateType type, String update) {
-                System.out.println(String.format("[DEBUG} - received update of type %s from game manager - '%s'",type.toString(),update));
+            public void update(String update) {
+                logger.debug(String.format("received update from game manager - '%s'",update));
 
                 String expecteddUpdateMsg = String.format(MSG_UPDATE,playerId,score);
-                if ( type.equals(UpdateType.STATUS) && update.equals(expecteddUpdateMsg)){
+                if (update.equals(expecteddUpdateMsg)){
                     validGameUpdate = true;
-                    System.out.println(String.format("[DEBUG} - received status update is correct"));
+                    logger.debug(String.format("received status update is correct"));
                 }
 
-                if( type.equals(UpdateType.GRADE )){
-                    score+=Float.valueOf(update);
-                }
             }
 
             private void validatePlayerRun(){
@@ -142,7 +143,7 @@ class GameManagerImplTest {
 
             @Override
             public void run() {
-                System.out.println("Thread "+ playerId+ " running");
+                logger.debug(String.format("Thread "+ playerId+ " running"));
                 gameManager.receiveAnswer(playerId,answer,1);
             }
         }

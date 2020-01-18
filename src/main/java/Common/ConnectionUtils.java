@@ -1,4 +1,4 @@
-package Utils;
+package Common;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,12 +19,13 @@ public class ConnectionUtils {
         return s;
     }
 
-    public static void sendObjectOutputStream(ObjectOutputStream os, String s) throws IOException {
-        os.writeObject(s);
+    public static void sendObjectOutputStream(ObjectOutputStream os, String json) throws IOException {
+        os.writeObject(json);
 
         PrintStream ps = new PrintStream(os);
         if (ps.checkError()){
             throw new IOException("Error sending client with objectStream " + os.toString());
         }
     }
+
 }

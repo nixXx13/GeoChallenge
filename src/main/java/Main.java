@@ -1,6 +1,6 @@
 import GameManager.GameManagerImpl;
 import GameManager.IGameManager;
-import Models.GameStage;
+import Common.GameStage;
 import Player.IPlayer;
 import Player.PlayerFactory;
 import org.apache.log4j.Logger;
@@ -21,27 +21,32 @@ public class Main {
     // Temp  implementation
     // ---------------------
 
-    public Main() throws IOException {
-        ServerSocket ss = new ServerSocket(8888);
-        System.out.println("Server is up!");
+    public static void main(String[] args) {
 
-        boolean run = true;
+        ServerSocket ss = null;
+        try {
+            ss = new ServerSocket(8888);
+            logger.info("Server is up!");
 
-        while (run) {
-            int id = 1;
+            boolean run = true;
 
-            Socket socket = ss.accept();
-            PlayerFactory playerFactory = new PlayerFactory();
+            while (run) {
+                int id = 1;
 
-            Map<Integer, IPlayer> players = new HashMap<>();
+                Socket socket = ss.accept();
+                PlayerFactory playerFactory = new PlayerFactory();
 
-            IPlayer player1 = playerFactory.getPlayer(socket, id);
+                Map<Integer, IPlayer> players = new HashMap<>();
 
-            players.put(id, player1);
+                IPlayer player1 = playerFactory.getPlayer(socket, id);
 
-            IGameManager gameManager = new GameManagerImpl(players, getGameStages());
-            gameManager.startGame();
+                players.put(id, player1);
 
+                IGameManager gameManager = new GameManagerImpl(players, getGameStages());
+                gameManager.startGame();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
