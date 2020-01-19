@@ -8,9 +8,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static Common.ConnectionUtils.sendObjectOutputStream;
 
@@ -30,19 +28,19 @@ public class PlayerOut {
         sendPlayer(json);
     }
 
-    public void send(GameDataType type,List<GameStage> gameStages) {
+    public void send(List<GameStage> gameStages) {
 
-        Map<String,String> data = new HashMap<>();
-        int i = 1;
-        for(GameStage gs : gameStages){
-
-            data.put( "q"+i , gs.getQuestion());
-            data.put( "a"+i,  gs.getAnswer());
-        }
-        GameData gameData = new GameData(type,data);
-        String json = Converter.toJson(gameData);
+        String json = Converter.toJson(gameStages);
         sendPlayer(json);
         logger.debug(String.format("sent questions as json '%s",json));
+    }
+
+    public void close(){
+        try {
+            os.close();
+        } catch (IOException e) {
+            logger.error("Failed closing Player OutputStream");
+        }
     }
 
     private void sendPlayer(String json){

@@ -1,18 +1,13 @@
 package Common;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 public class ConnectionUtils {
 
-    public static String readObjectInputStream(ObjectInputStream is){
+    public static String readBufferReader(BufferedReader br){
         String s = null;
         try {
-            s = (String) is.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            s = br.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }

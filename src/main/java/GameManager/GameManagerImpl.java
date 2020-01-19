@@ -48,28 +48,31 @@ public class GameManagerImpl implements IGameManager {
 
         int questionsAnswered = numberQuestionsAnswered.get(currPlayerId);
 
-        // grading answer
-        GameStage currPlayerGameStage = gameStages.get(questionsAnswered);
-        float answerScore = gradeGameStage(currPlayerGameStage, answer, time);
-        // sending score
-        currPlayer.grade(answerScore);
+        if (questionsAnswered < gameStages.size()) {
+            // grading answer
+            GameStage currPlayerGameStage = gameStages.get(questionsAnswered);
+            float answerScore = gradeGameStage(currPlayerGameStage, answer, time);
+            // sending score
+            currPlayer.grade(answerScore);
 
-        // updating player status
-        int currentQuestionsAnswered = questionsAnswered+1;
-        numberQuestionsAnswered.put(currPlayerId,currentQuestionsAnswered);
+            // updating player status
+            int currentQuestionsAnswered = questionsAnswered + 1;
+            numberQuestionsAnswered.put(currPlayerId, currentQuestionsAnswered);
 
-        // sending updates
-        String updateMsg = String.format(MSG_UPDATE,currPlayerId,answerScore);
-        for(Integer playerId : players.keySet()){
-            IPlayer player = players.get(playerId);
-            logger.trace(String.format("updating player %d with update msg '%s'",player.getId(),updateMsg));
-            player.update(updateMsg);
-        }
+            // sending updates
+            String updateMsg = String.format(MSG_UPDATE, currPlayerId, answerScore);
+            for (Integer playerId : players.keySet()) {
+                IPlayer player = players.get(playerId);
+                logger.trace(String.format("updating player %d with update msg '%s'", player.getId(), updateMsg));
+                player.update(updateMsg);
+            }
 
-        if (currentQuestionsAnswered == gameRoundsNumber){
-            String endMsg = String.format(MSG_END,currPlayerId);
-            logger.debug(String.format("player %d finished answering all his questions",currPlayer.getId()));
-            currPlayer.end(endMsg);
+            if (currentQuestionsAnswered == gameRoundsNumber) {
+                String endMsg = String.format(MSG_END, currPlayerId);
+                logger.debug(String.format("player %d finished answering all his questions", currPlayer.getId()));
+                currPlayer.update(endMsg);
+                currPlayer.end("");
+            }
         }
     }
 
