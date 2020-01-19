@@ -1,40 +1,56 @@
 package Player;
 
-import Models.GameStage;
+import Common.Converter;
+import Common.GameData;
+import Common.GameData.GameDataType;
+import Common.GameStage;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import static Utils.ConnectionUtils.sendObjectOutputStream;
+import static Common.ConnectionUtils.sendObjectOutputStream;
 
 public class PlayerOut {
 
+    final static Logger logger = Logger.getLogger(PlayerOut.class);
     private ObjectOutputStream os;
 
     public PlayerOut(ObjectOutputStream os){
         this.os = os;
     }
 
-    public void send(String update){
-        try {
-            sendObjectOutputStream(os,update);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // TODO - handle send fail!
+    public void send(GameDataType type, String msg){
+        GameData gameData = new GameData(type,msg);
+        String json = Converter.toJson(gameData);
+
+        sendPlayer(json);
     }
 
     public void send(List<GameStage> gameStages) {
 
-        // TODO - temp
-        StringBuilder Questions =  new StringBuilder();
-        for(GameStage gs : gameStages){
-            Questions.append(gs.getQuestion());
-            Questions.append(":");
+        String json = Converter.toJson(gameStages);
+        sendPlayer(json);
+        logger.debug(String.format("sent questions as json '%s",json));
+    }
+
+    public void close(){
+        logger.debug("Closing output stream");
+        try {
+            os.close();
+        } catch (IOException e) {
+            logger.error("Failed closing Player OutputStream");
         }
-        send(Questions.toString());
+    }
+
+    private void sendPlayer(String json){
+        try {
+            sendObjectOutputStream(os,json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // TODO - handle send fail!
     }
 }
 
