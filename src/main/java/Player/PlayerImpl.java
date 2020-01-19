@@ -39,8 +39,6 @@ public class PlayerImpl implements IPlayer,Runnable {
 
     public void end( String endMsg ) {
         playerOut.send(GameDataType.END,"Game ended successfully");
-//        playerIn.close();
-        playerOut.close();
     }
 
     public void grade(float newGrade) {
@@ -61,6 +59,10 @@ public class PlayerImpl implements IPlayer,Runnable {
         playerOut.send(gameStages);
         playerIn.setPlayer(this);
         playerIn.listen();
+
+        // game ended - closing
+        playerOut.close();
+        playerIn.close();
     }
 
 }

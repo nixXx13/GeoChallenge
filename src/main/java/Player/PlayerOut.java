@@ -36,6 +36,7 @@ public class PlayerOut {
     }
 
     public void close(){
+        logger.debug("Closing output stream");
         try {
             os.close();
         } catch (IOException e) {

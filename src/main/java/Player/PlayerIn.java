@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.InputStreamReader;
 
 import static Common.ConnectionUtils.readBufferReader;
 
@@ -12,28 +12,34 @@ public class PlayerIn {
 
     final static Logger logger = Logger.getLogger(PlayerIn.class);
 
-    private BufferedReader br;
+    private InputStreamReader is;
     private IPlayer player;
 
-    public PlayerIn(BufferedReader br){
-        this.br = br;
+    private String END = "end";
+
+    public PlayerIn(InputStreamReader is){
+        this.is = is;
     }
 
     public void listen() {
-        String playerInput = readBufferReader(br);
-        while ( playerInput != null){
-            player.handleAnswer(playerInput);
-            playerInput = readBufferReader(br);
+        logger.info(String.format("Listening to player '%d' input",player.getId()));
+        try( BufferedReader br = new BufferedReader(is)){
+            String playerInput = readBufferReader(br);
+            while ( playerInput != null && !END.equals(playerInput)){
+                player.handleAnswer(playerInput);
+                playerInput = readBufferReader(br);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        // TODO - Player exited/finished/connection terminated
-
+        logger.info(String.format("Stopped listening to player '%d' input",player.getId()));
     }
 
     public void close(){
         try {
-            br.close();
+            is.close();
         } catch (IOException e) {
-            logger.error("Failed closing Player InputStream");
+            logger.error(String.format("Failed closing Player '%d' InputStream",player.getId()));
         }
     }
 

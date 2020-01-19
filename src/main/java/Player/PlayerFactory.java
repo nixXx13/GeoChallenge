@@ -8,9 +8,9 @@ public class PlayerFactory {
     public IPlayer getPlayer(Socket socket, int id) throws IOException {
 
         ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        InputStreamReader is = new InputStreamReader(socket.getInputStream());
 
-        PlayerIn playerIn = new PlayerIn(br);
+        PlayerIn playerIn = new PlayerIn(is);
         PlayerOut playerOut = new PlayerOut(os);
 
         return new PlayerImpl(id, playerIn, playerOut);
