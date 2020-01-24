@@ -30,6 +30,7 @@ public class Converter {
 
             data.put( "q"+i , gs.getQuestion());
             data.put( "a"+i,  gs.getAnswer());
+            i++;
         }
         return new GameData(GameData.GameDataType.DATA,data);
 
