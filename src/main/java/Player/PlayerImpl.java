@@ -69,6 +69,10 @@ public class PlayerImpl implements IPlayer,Runnable {
         gameManager.receiveAnswer(id,playerAnswer,time);
     }
 
+    public void disconnect(){
+        gameManager.receiveDisconnect(id);
+    }
+
     public void run() {
         playerOut.send(gameStages);
         playerIn.setPlayer(this);

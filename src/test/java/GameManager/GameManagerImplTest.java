@@ -116,6 +116,11 @@ class GameManagerImplTest {
             }
 
             @Override
+            public void disconnect() {
+
+            }
+
+            @Override
             public void handleAnswer(String playerAnswer) {
             }
 

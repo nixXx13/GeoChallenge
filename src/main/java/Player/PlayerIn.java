@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.SocketException;
 
 import static Common.ConnectionUtils.readBufferReader;
 
@@ -30,9 +31,8 @@ public class PlayerIn {
                 playerInput = readBufferReader(br);
             }
         } catch (IOException e) {
-            logger.error(String.format("Error listening to player '%d' input",player.getId()));
-            e.printStackTrace();
-            // TODO - notify GM finish/decrease
+            logger.error(String.format("Error listening to player '%d' input",player.getId()),e);
+            player.disconnect();
         }
         logger.info(String.format("Stopped listening to player '%d' input",player.getId()));
     }

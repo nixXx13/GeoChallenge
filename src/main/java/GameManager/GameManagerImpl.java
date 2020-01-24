@@ -41,11 +41,11 @@ public class GameManagerImpl implements IGameManager {
         }
     }
 
-    public void receiveAnswer(int currPlayerId, String answer, float time){
-        logger.debug(String.format("player %d - received answer '%s' in %fs ",currPlayerId,answer,time));
-        IPlayer currPlayer = players.get(currPlayerId);
-
+    public void receiveAnswer(int playerId, String answer, float time){
+        logger.debug(String.format("player %d - received answer '%s' in %fs ",playerId,answer,time));
+        IPlayer currPlayer = players.get(playerId);
         int questionsAnswered = currPlayer.getQuestionsAnswered();
+
         if (questionsAnswered < gameStages.size()) {
             // grading answer and sending score
             GameStage currPlayerGameStage = gameStages.get(questionsAnswered);
@@ -57,30 +57,21 @@ public class GameManagerImpl implements IGameManager {
             currPlayer.setQuestionsAnswered(++questionsAnswered);
 
             // sending updates
-            String updateMsg = String.format(MSG_UPDATE, currPlayerId, answerScore);
+            String updateMsg = String.format(MSG_UPDATE, playerId, answerScore);
             updateAllPlayers(updateMsg);
 
             if (questionsAnswered == gameRoundsNumber) {
-                String endMsg = String.format(MSG_END, currPlayerId);
+                String endMsg = String.format(MSG_END, playerId);
                 logger.debug(String.format("player %d - finished answering questions with score %f. Waiting for other players" +
                         " to finish.", currPlayer.getId(),currPlayer.getScore()));
                 currPlayer.update(endMsg);
-
-                if(getActivePlayersNumber()==1){ // last player
-                    logger.debug(String.format("player %d - last active player. Notifying rest of the players game ended",currPlayerId));
-                    String summary = "SUMMARY";
-                    for (Integer playerId : players.keySet()) {
-                        IPlayer player = players.get(playerId);
-                        logger.trace(String.format("player %d - updating with end msg '%s'", player.getId(), updateMsg));
-                        player.end(summary);
-                    }
-                }
-                else {
-                    decreasegetActivePlayersNumber();
-                    logger.debug(String.format("player %d - decreased active players number to %d",currPlayerId,getActivePlayersNumber()));
-                }
+                decreaseActivePlayersCounter(playerId);
             }
         }
+    }
+
+    public void receiveDisconnect(int playerId){
+        decreaseActivePlayersCounter(playerId);
     }
 
     private float gradeGameStage(GameStage gameStage, String answer, float time) {
@@ -90,12 +81,19 @@ public class GameManagerImpl implements IGameManager {
         return grade;
     }
 
-    private synchronized void decreasegetActivePlayersNumber(){
+    private synchronized void decreaseActivePlayersCounter(int playerId){
         activePlayers-=1;
-    }
+        logger.debug(String.format("player %d - decreased active players number to %d",playerId,activePlayers));
 
-    private synchronized int getActivePlayersNumber(){
-        return activePlayers;
+        if(activePlayers==0){ // last player
+            logger.debug(String.format("player %d - last active player. Notifying rest of the players game ended",playerId));
+            String summary = "SUMMARY";
+            for (Integer cPlayerId : players.keySet()) {
+                IPlayer player = players.get(cPlayerId);
+                logger.trace(String.format("player %d - updating with end msg '%s'", player.getId(), summary));
+                player.end(summary);
+            }
+        }
     }
 
     private void updateAllPlayers(String updateMsg){
