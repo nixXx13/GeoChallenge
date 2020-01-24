@@ -9,6 +9,8 @@ public interface IPlayer extends Runnable {
 
     public int getId();
     public float getScore();
+    public int getQuestionsAnswered();
+    public void setQuestionsAnswered(int questionsAnswered);
 
     public void init(IGameManager gameManager, List<GameStage> gameStages);
 
@@ -16,6 +18,7 @@ public interface IPlayer extends Runnable {
     public void grade(float newGrade);
     public void end(String msg);
 
+    // TODO - change method name?
     public void handleAnswer(String playerAnswer);
 }
 

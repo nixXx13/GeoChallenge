@@ -58,9 +58,11 @@ public class Main {
         List<String> pAnswers = new ArrayList<>();
         pAnswers.add("1");
         pAnswers.add("2");
-        GameStage gameStage = new GameStage("1+1",pAnswers,"2");
+        GameStage gameStage1 = new GameStage("1+1",pAnswers,"2");
+        GameStage gameStage2 = new GameStage("1+2",pAnswers,"3");
 
-        qs.add(gameStage);
+        qs.add(gameStage1);
+        qs.add(gameStage2);
 
         return qs;
     }

@@ -30,7 +30,9 @@ public class PlayerIn {
                 playerInput = readBufferReader(br);
             }
         } catch (IOException e) {
+            logger.error(String.format("Error listening to player '%d' input",player.getId()));
             e.printStackTrace();
+            // TODO - notify GM finish/decrease
         }
         logger.info(String.format("Stopped listening to player '%d' input",player.getId()));
     }

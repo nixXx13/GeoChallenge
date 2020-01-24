@@ -8,8 +8,11 @@ import java.util.List;
 
 public class PlayerImpl implements IPlayer,Runnable {
 
+    // TODO - add minor UT
+
     private float score;
     private int id;
+    private int questionsAnswered;
     private IGameManager gameManager;
     private List<GameStage> gameStages;
 
@@ -20,6 +23,8 @@ public class PlayerImpl implements IPlayer,Runnable {
         this.id = id;
         this.playerIn = playerIn;
         this.playerOut = playerOut;
+        this.score = 0;
+        questionsAnswered = 0;
     }
 
 
@@ -31,6 +36,15 @@ public class PlayerImpl implements IPlayer,Runnable {
         return score;
     }
 
+    public int getQuestionsAnswered() {
+        return questionsAnswered;
+    }
+
+    @Override
+    public void setQuestionsAnswered(int questionsAnswered) {
+        this.questionsAnswered = questionsAnswered;
+    }
+
     public void init(IGameManager gameManager, List<GameStage> gameStages) {
         this.gameManager = gameManager;
         this.gameStages = gameStages;
@@ -38,7 +52,7 @@ public class PlayerImpl implements IPlayer,Runnable {
 
 
     public void end( String endMsg ) {
-        playerOut.send(GameDataType.END,"Game ended successfully");
+        playerOut.send(GameDataType.END,endMsg);
     }
 
     public void grade(float newGrade) {

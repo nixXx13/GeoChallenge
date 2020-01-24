@@ -7,6 +7,7 @@ public class ConnectionUtils {
     public static String readBufferReader(BufferedReader br){
         String s = null;
         try {
+            // TODO - handle connection reset - handled?
             s = br.readLine();
         } catch (IOException e) {
             e.printStackTrace();
