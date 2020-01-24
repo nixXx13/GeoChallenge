@@ -4,14 +4,8 @@ import java.io.*;
 
 public class ConnectionUtils {
 
-    public static String readBufferReader(BufferedReader br){
-        String s = null;
-        try {
-            s = br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return s;
+    public static String readBufferReader(BufferedReader br) throws IOException {
+        return br.readLine();
     }
 
     public static void sendObjectOutputStream(ObjectOutputStream os, String json) throws IOException {

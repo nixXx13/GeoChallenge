@@ -48,9 +48,8 @@ public class PlayerOut {
         try {
             sendObjectOutputStream(os,json);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error sending player ",e);
         }
-        // TODO - handle send fail!
     }
 }
 

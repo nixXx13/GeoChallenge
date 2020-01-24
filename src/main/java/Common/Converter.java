@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Converter {
-
+    // TODO - add UT
     private static Gson gson = new Gson();
 
     public static String toJson(GameData gameData){

@@ -3,6 +3,7 @@ package GameManager;
 import Common.GameStage;
 import Player.IPlayer;
 import org.apache.log4j.Logger;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ class GameManagerImplTest {
     void setUp() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void OnePlayerTest() throws InterruptedException {
         logger.info("=========== Starting test OnePlayerTest");
         int playerId1 = 11;
@@ -34,7 +35,10 @@ class GameManagerImplTest {
         gameStages = new ArrayList<>();
         gameStages.add(new GameStage("q",null,"answer"));
         players = new HashMap<Integer, IPlayer>();
-        players.put(playerId1,buildMockPlayer(playerId1,"answer", gameManager));
+
+        List<String> answers = new ArrayList<>();
+        answers.add("answer");
+        players.put(playerId1,buildMockPlayer(playerId1,answers));
 
         gameManager = new GameManagerImpl(players,gameStages);
 
@@ -44,42 +48,53 @@ class GameManagerImplTest {
 
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void TwoPlayersTest() throws InterruptedException {
         logger.info("=========== Starting test TwoPlayersTest");
         int playerId1 = 11;
         int playerId2 = 22;
 
         gameStages = new ArrayList<>();
-        gameStages.add(new GameStage("q",null,"answer"));
+        gameStages.add(new GameStage("q1",null,"answer1"));
+        gameStages.add(new GameStage("q2",null,"answer2"));
+        gameStages.add(new GameStage("q3",null,"answer3"));
         players = new HashMap<>();
-        players.put(playerId1,buildMockPlayer(playerId1,"answer",gameManager));
-        players.put(playerId2,buildMockPlayer(playerId2,"answer111",gameManager));
+
+        List<String> answers1 = new ArrayList<>();
+        answers1.add("answer1");
+        answers1.add("answer2");
+        answers1.add("answer3");
+
+        players.put(playerId1,buildMockPlayer(playerId1,answers1));
+
+        List<String> answers2 = new ArrayList<>();
+        answers2.add("answer111");
+        answers2.add("answer2");
+        answers2.add("answer111");
+        players.put(playerId2,buildMockPlayer(playerId2,answers2));
 
         gameManager = new GameManagerImpl(players,gameStages);
 
         gameManager.startGame();
         Thread.sleep(1000);
-        assertEquals(1,players.get(playerId1).getScore());
-        assertEquals(0,players.get(playerId2).getScore());
+        assertEquals(3,players.get(playerId1).getScore());
+        assertEquals(1,players.get(playerId2).getScore());
 
     }
 
-    private IPlayer buildMockPlayer(final int playerId, final String answer, GameManagerImpl gameManager){
+
+    private IPlayer buildMockPlayer(final int playerId, final List<String> answers){
 
         // TODO - replace with mock
         class PlayerMock implements IPlayer{
 
             private IGameManager gameManager;
-
-            private boolean validGameEnd;
-            private boolean validGameUpdate;
+            private int answerIndex = 0;
             private float score;
+            private int questionAnswered = 0;
 
             public PlayerMock(){
                 score = 0f;
-                validGameEnd = false;
-                validGameUpdate = false;
             }
 
             @Override
@@ -92,18 +107,21 @@ class GameManagerImplTest {
 
             @Override
             public void end(String update) {
-                logger.debug(String.format("received end from game manager - '%s'",update));
+//                logger.debug(String.format("received end from game manager - '%s'",update));
 
-                String updateMsg = String.format(MSG_END,playerId);
-                if (updateMsg.equals(update)) {
-                    validGameEnd = true;
-                    logger.debug(String.format("received end update is correct"));
-                }
+//                String updateMsg = String.format(MSG_END,playerId);
+//                if (updateMsg.equals(update)) {
+//                    logger.debug(String.format("received end update is correct"));
+//                }
+            }
+
+            @Override
+            public void disconnect() {
+
             }
 
             @Override
             public void handleAnswer(String playerAnswer) {
-
             }
 
             @Override
@@ -113,38 +131,44 @@ class GameManagerImplTest {
 
             @Override
             public float getScore() {
-                validatePlayerRun();
                 return score;
             }
 
             @Override
+            public int getQuestionsAnswered() {
+                return  questionAnswered;
+            }
+
+            @Override
+            public void setQuestionsAnswered(int questionsAnswered) {
+                this.questionAnswered = questionsAnswered;
+            }
+
+            @Override
             public void grade(float newGrade) {
-                logger.debug(String.format("adding score " + newGrade));
                 score+=newGrade;
+                logger.debug(String.format("new score " + score));
             }
 
 
             @Override
             public void update(String update) {
-                logger.debug(String.format("received update from game manager - '%s'",update));
-
-                String expecteddUpdateMsg = String.format(MSG_UPDATE,playerId,score);
-                if (update.equals(expecteddUpdateMsg)){
-                    validGameUpdate = true;
-                    logger.debug(String.format("received status update is correct"));
-                }
-
+//                logger.debug(String.format("received update from game manager - '%s'",update));
             }
 
-            private void validatePlayerRun(){
-//                assertTrue(validGameEnd,"");
-//                assertTrue(validGameUpdate,"");
-            }
 
             @Override
             public void run() {
                 logger.debug(String.format("Thread "+ playerId+ " running"));
-                gameManager.receiveAnswer(playerId,answer,1);
+                while(answerIndex<answers.size()) {
+                    gameManager.receiveAnswer(playerId, answers.get(answerIndex), 1);
+                    answerIndex += 1;
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         return new PlayerMock();
