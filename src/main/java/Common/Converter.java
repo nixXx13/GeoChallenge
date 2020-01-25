@@ -29,6 +29,7 @@ public class Converter {
         for(GameStage gs : gameStages){
 
             data.put( "q"+i , gs.getQuestion());
+            // TODO - strip answer from data sent to client. Send possible answers only.
             data.put( "a"+i,  gs.getAnswer());
             i++;
         }

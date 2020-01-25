@@ -6,7 +6,7 @@ public interface IGameManager {
 
         void receiveAnswer(int currPlayerId, String answer, float time);
 
-        public void receiveDisconnect(int playerId);
+        void receiveDisconnect(int playerId);
 }
 
 

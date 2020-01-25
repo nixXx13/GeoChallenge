@@ -7,19 +7,19 @@ import java.util.List;
 
 public interface IPlayer extends Runnable {
 
-    public int getId();
-    public float getScore();
-    public int getQuestionsAnswered();
-    public void setQuestionsAnswered(int questionsAnswered);
+    int getId();
+    float getScore();
+    int getQuestionsAnswered();
+    void setQuestionsAnswered(int questionsAnswered);
 
-    public void init(IGameManager gameManager, List<GameStage> gameStages);
+    void init(IGameManager gameManager, List<GameStage> gameStages);
 
-    public void update(String msg);
-    public void grade(float newGrade);
-    public void end(String msg);
-    public void disconnect();
+    void update(String msg);
+    void grade(float newGrade);
+    void end(String msg);
+    void disconnect();
 
     // TODO - change method name?
-    public void handleAnswer(String playerAnswer);
+    void handleAnswer(String playerAnswer);
 }
 

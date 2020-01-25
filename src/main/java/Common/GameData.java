@@ -9,7 +9,7 @@ public class GameData {
     private GameDataType type;
 
     public enum GameDataType{
-        START,
+//        START,
         DATA,
         UPDATE,
         GRADE,
