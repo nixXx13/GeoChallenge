@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.SocketException;
 
 import static Common.ConnectionUtils.readBufferReader;
 
@@ -23,7 +22,7 @@ public class PlayerIn {
     }
 
     public void listen() {
-        logger.info(String.format("Listening to player '%d' input",player.getId()));
+        logger.debug(String.format("Listening to player '%d' input",player.getId()));
         try( BufferedReader br = new BufferedReader(is)){
             String playerInput = readBufferReader(br);
             while ( playerInput != null && !END.equals(playerInput)){
@@ -34,7 +33,7 @@ public class PlayerIn {
             logger.error(String.format("Error listening to player '%d' input",player.getId()),e);
             player.disconnect();
         }
-        logger.info(String.format("Stopped listening to player '%d' input",player.getId()));
+        logger.debug(String.format("Stopped listening to player '%d' input",player.getId()));
     }
 
     public void close(){

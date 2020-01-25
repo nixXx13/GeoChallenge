@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GameManagerImpl implements IGameManager {
-    // TODO - improve UT
+    // TODO - add id  to game managers for logging purposes
     final static Logger logger = Logger.getLogger(GameManagerImpl.class);
 
     private int gameRoundsNumber;
@@ -34,7 +34,7 @@ public class GameManagerImpl implements IGameManager {
         for(Integer playerId : players.keySet()){
             IPlayer player = players.get(playerId);
 
-            logger.debug(String.format("player %d - game started",playerId));
+            logger.info(String.format("player %d - starting game for player",playerId));
             player.init(this, gameStages);
             Thread p = new Thread(player);
             p.start();
@@ -50,7 +50,7 @@ public class GameManagerImpl implements IGameManager {
             // grading answer and sending score
             GameStage currPlayerGameStage = gameStages.get(questionsAnswered);
             float answerScore = gradeGameStage(currPlayerGameStage, answer, time);
-            logger.debug(String.format("player %d - scored '%f' in question #%d", currPlayer.getId(), answerScore,questionsAnswered));
+            logger.info(String.format("player %d - scored '%f' in question #%d", currPlayer.getId(), answerScore,questionsAnswered));
             currPlayer.grade(answerScore);
 
             // updating player question counter
@@ -60,6 +60,7 @@ public class GameManagerImpl implements IGameManager {
             String updateMsg = String.format(MSG_UPDATE, playerId, answerScore);
             updateAllPlayers(updateMsg);
 
+            // checking if player finished game
             if (questionsAnswered == gameRoundsNumber) {
                 String endMsg = String.format(MSG_END, playerId);
                 logger.debug(String.format("player %d - finished answering questions with score %f. Waiting for other players" +
@@ -82,11 +83,13 @@ public class GameManagerImpl implements IGameManager {
     }
 
     private synchronized void decreaseActivePlayersCounter(int playerId){
+        // decreasing active players counter
         activePlayers-=1;
         logger.debug(String.format("player %d - decreased active players number to %d",playerId,activePlayers));
 
-        if(activePlayers==0){ // last player
-            logger.debug(String.format("player %d - last active player. Notifying rest of the players game ended",playerId));
+        // checking if current finishing player is the last player
+        if(activePlayers==0){
+            logger.info(String.format("player %d - last active player. Notifying rest of the players game ended",playerId));
             String summary = "SUMMARY";
             for (Integer cPlayerId : players.keySet()) {
                 IPlayer player = players.get(cPlayerId);

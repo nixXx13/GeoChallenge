@@ -24,15 +24,13 @@ public class PlayerOut {
     public void send(GameDataType type, String msg){
         GameData gameData = new GameData(type,msg);
         String json = Converter.toJson(gameData);
-
         sendPlayer(json);
     }
 
     public void send(List<GameStage> gameStages) {
-
         String json = Converter.toJson(gameStages);
         sendPlayer(json);
-        logger.debug(String.format("sent questions as json '%s",json));
+        logger.debug(String.format("sent questions as json '%s'",json));
     }
 
     public void close(){
@@ -47,6 +45,7 @@ public class PlayerOut {
     private void sendPlayer(String json){
         try {
             sendObjectOutputStream(os,json);
+            logger.trace(String.format("sent palyer '%s'",json));
         } catch (IOException e) {
             logger.error("Error sending player ",e);
         }

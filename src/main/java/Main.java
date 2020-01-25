@@ -21,6 +21,15 @@ public class Main {
     // Temp  implementation
     // ---------------------
 
+    // TODO see below
+    // implement game dispacher
+    // create String consts for classes
+
+    // create CI pipeline
+    // create Game Stages generator service
+
+    // create system properties file for port etc
+
     public static void main(String[] args) {
 
 //        ServerSocket ss;
