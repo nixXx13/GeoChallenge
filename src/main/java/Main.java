@@ -41,16 +41,16 @@ public class Main {
             boolean run = true;
 
             while (run) {
-                int id = 1;
-
-                Socket socket = ss.accept();
-                PlayerFactory playerFactory = new PlayerFactory();
-
+                int playersNum = 2;
                 Map<Integer, IPlayer> players = new HashMap<>();
 
-                IPlayer player1 = playerFactory.getPlayer(socket, id);
+                for(int i=0;i<playersNum;i++) {
+                    Socket socket = ss.accept();
+                    PlayerFactory playerFactory = new PlayerFactory();
 
-                players.put(id, player1);
+                    IPlayer player1 = playerFactory.getPlayer(socket, i);
+                    players.put(i, player1);
+                }
 
                 IGameManager gameManager = new GameManagerImpl(players, getGameStages());
                 gameManager.startGame();
