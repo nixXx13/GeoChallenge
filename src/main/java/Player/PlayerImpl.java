@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PlayerImpl implements IPlayer,Runnable {
 
-    // TODO - add minor UT
+    // TODO - add UT
 
     private float score;
     private int id;
@@ -81,6 +81,7 @@ public class PlayerImpl implements IPlayer,Runnable {
         // game ended - closing
         playerOut.close();
         playerIn.close();
+        // TODO - close socket?
     }
 
 }
