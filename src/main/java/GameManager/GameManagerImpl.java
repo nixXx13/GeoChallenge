@@ -50,6 +50,7 @@ public class GameManagerImpl implements IGameManager {
         IPlayer currPlayer = players.get(playerId);
         int questionsAnswered = currPlayer.getQuestionsAnswered();
 
+        // TODO - remove this to PlayerImpl
         if (questionsAnswered < gameStages.size()) {
             // grading answer and sending score
             GameStage currPlayerGameStage = gameStages.get(questionsAnswered);

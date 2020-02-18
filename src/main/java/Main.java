@@ -32,10 +32,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-//        ServerSocket ss;
-//        try  {
         try  (ServerSocket ss = new ServerSocket(8888)){
-//            ss = new ServerSocket(8888);
             logger.info("Server is up!");
 
             boolean run = true;
