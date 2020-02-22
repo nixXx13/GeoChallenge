@@ -3,6 +3,9 @@ import GameManager.IGameManager;
 import Common.GameStage;
 import Player.IPlayer;
 import Player.PlayerFactory;
+import QuestionsProvider.IQuestionProvider;
+import QuestionsProvider.QuestionProviderFactory;
+import QuestionsProvider.QuestionProviderFactory.QuestionProviderType;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -17,6 +20,9 @@ public class Main {
 
     final static Logger logger = Logger.getLogger(Main.class);
 
+    private final static int PLAYERS_NUM = 1;
+    private final static int PORT = 8888;
+    private final static QuestionProviderType qType = QuestionProviderType.GEO_REMOTE;
     // ---------------------
     // Temp  implementation
     // ---------------------
@@ -32,13 +38,18 @@ public class Main {
 
     public static void main(String[] args) {
 
-        try  (ServerSocket ss = new ServerSocket(8888)){
+        try  (ServerSocket ss = new ServerSocket(PORT)){
             logger.info("Server is up!");
 
             boolean run = true;
 
             while (run) {
-                int playersNum = 2;
+                int playersNum = PLAYERS_NUM;
+
+                // TODO - handle qProvider not connecting
+                IQuestionProvider questionProvider = QuestionProviderFactory.
+                        getQuestionProvider(qType);
+
                 Map<Integer, IPlayer> players = new HashMap<>();
 
                 for(int i=0;i<playersNum;i++) {
@@ -49,7 +60,7 @@ public class Main {
                     players.put(i, player1);
                 }
 
-                IGameManager gameManager = new GameManagerImpl(players, getGameStages());
+                IGameManager gameManager = new GameManagerImpl(players, questionProvider.getQuestions(-1));
                 gameManager.startGame();
             }
         } catch (IOException e) {
@@ -57,19 +68,4 @@ public class Main {
         }
     }
 
-
-    static List<GameStage> getGameStages(){
-        ArrayList<GameStage> qs = new ArrayList<>();
-
-        List<String> pAnswers = new ArrayList<>();
-        pAnswers.add("1");
-        pAnswers.add("2");
-        GameStage gameStage1 = new GameStage("1+1",pAnswers,"2");
-        GameStage gameStage2 = new GameStage("1+2",pAnswers,"3");
-
-        qs.add(gameStage1);
-        qs.add(gameStage2);
-
-        return qs;
-    }
 }
