@@ -19,7 +19,6 @@ public interface IPlayer extends Runnable {
     void end(String msg);
     void disconnect();
 
-    // TODO - change method name?
     void handleAnswer(String playerAnswer);
 }
 

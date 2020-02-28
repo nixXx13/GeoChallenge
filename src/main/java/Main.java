@@ -22,7 +22,7 @@ public class Main {
 
     private final static int PLAYERS_NUM = 1;
     private final static int PORT = 8888;
-    private final static QuestionProviderType qType = QuestionProviderType.GEO_REMOTE;
+    private final static QuestionProviderType qType = QuestionProviderType.LOCAL_TEST;
     // ---------------------
     // Temp  implementation
     // ---------------------
@@ -46,7 +46,7 @@ public class Main {
             while (run) {
                 int playersNum = PLAYERS_NUM;
 
-                // TODO - handle qProvider not connecting
+                // TODO - throw dedicated exception?
                 IQuestionProvider questionProvider = QuestionProviderFactory.
                         getQuestionProvider(qType);
 
