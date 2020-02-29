@@ -50,6 +50,10 @@ public class PlayerImpl implements IPlayer,Runnable {
         this.gameStages = gameStages;
     }
 
+    // acknoledge player that he is connected to server
+    public void ack(String info){
+        playerOut.send(GameDataType.ACK,info);
+    }
 
     public void end( String endMsg ) {
         playerOut.send(GameDataType.END,endMsg);

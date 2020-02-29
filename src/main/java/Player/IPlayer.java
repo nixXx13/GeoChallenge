@@ -14,6 +14,7 @@ public interface IPlayer extends Runnable {
 
     void init(IGameManager gameManager, List<GameStage> gameStages);
 
+    void ack(String info);
     void update(String msg);
     void grade(float newGrade);
     void end(String msg);

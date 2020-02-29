@@ -19,7 +19,7 @@ public class GameManagerImpl implements IGameManager {
     private int activePlayers;
     private int id;
 
-    private final String MSG_UPDATE = "Player %s scored %f.";
+    private final String MSG_UPDATE = "Player %s scored %.2f.";
     private final String MSG_END    = "Player %s finished game.";
 
 
@@ -81,7 +81,7 @@ public class GameManagerImpl implements IGameManager {
     }
 
     private float gradeGameStage(GameStage gameStage, String answer, float time) {
-        float grade = gameStage.isAnswerCorrect(answer) ? 1f : 0f ;
+        float grade = gameStage.isAnswerCorrect(answer) ? 1 : 0 ;
         grade*=time;
         logger.trace(String.format("Graded '%f' answer '%s' for question %s",grade,answer,gameStage.getQuestion()));
         return grade;

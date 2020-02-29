@@ -190,6 +190,11 @@ class GameManagerImplTest {
 
         }
 
+        @Override
+        public void ack(String info) {
+
+        }
+
 
         @Override
         public void end(String update) {
