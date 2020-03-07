@@ -21,6 +21,7 @@ public class Main {
     final static Logger logger = Logger.getLogger(Main.class);
 
     private final static int PLAYERS_NUM = 1;
+    private final static int QUESTIONS_NUMBER = 5;
     private final static int PORT = 8888;
     private final static QuestionProviderType qType = QuestionProviderType.GEO_REMOTE;
     // ---------------------
@@ -32,7 +33,6 @@ public class Main {
     // create String consts for classes
 
     // create CI pipeline
-    // create Game Stages generator service
 
     // create system properties file for port etc
 
@@ -46,7 +46,7 @@ public class Main {
             while (run) {
                 int playersNum = PLAYERS_NUM;
 
-                // TODO - handle qProvider not connecting
+                // TODO - throw dedicated exception?
                 IQuestionProvider questionProvider = QuestionProviderFactory.
                         getQuestionProvider(qType);
 
@@ -56,11 +56,12 @@ public class Main {
                     Socket socket = ss.accept();
                     PlayerFactory playerFactory = new PlayerFactory();
 
-                    IPlayer player1 = playerFactory.getPlayer(socket, i);
-                    players.put(i, player1);
+                    IPlayer player = playerFactory.getPlayer(socket, i);
+                    player.ack("connected");
+                    players.put(i, player);
                 }
 
-                IGameManager gameManager = new GameManagerImpl(players, questionProvider.getQuestions(-1));
+                IGameManager gameManager = new GameManagerImpl(players, questionProvider.getQuestions(QUESTIONS_NUMBER));
                 gameManager.startGame();
             }
         } catch (IOException e) {

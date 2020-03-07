@@ -1,5 +1,6 @@
 package Player;
 
+import Common.GameData;
 import GameManager.IGameManager;
 import Common.GameStage;
 
@@ -14,12 +15,12 @@ public interface IPlayer extends Runnable {
 
     void init(IGameManager gameManager, List<GameStage> gameStages);
 
+    void ack(String info);
     void update(String msg);
     void grade(float newGrade);
     void end(String msg);
     void disconnect();
 
-    // TODO - change method name?
-    void handleAnswer(String playerAnswer);
+    void handleResponse(GameData gameData);
 }
 

@@ -1,36 +1,35 @@
 package Player;
 
+import Common.GameData;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 
-import static Common.ConnectionUtils.readBufferReader;
+import static Common.ConnectionUtils.read;
 
 public class PlayerIn {
 
     final static Logger logger = Logger.getLogger(PlayerIn.class);
 
-    private InputStreamReader is;
+    private ObjectInputStream is;
     private IPlayer player;
 
-    private String END = "end";
 
-    public PlayerIn(InputStreamReader is){
+    public PlayerIn(ObjectInputStream is){
         this.is = is;
     }
 
     public void listen() {
         logger.debug(String.format("Listening to player '%d' input",player.getId()));
-        try( BufferedReader br = new BufferedReader(is)){
-            String playerInput = readBufferReader(br);
-            while ( playerInput != null && !END.equals(playerInput)){
-                player.handleAnswer(playerInput);
-                playerInput = readBufferReader(br);
-            }
-        } catch (IOException e) {
-            logger.error(String.format("Error listening to player '%d' input",player.getId()),e);
+
+        GameData gameData = read(is);
+        while ( gameData != null && !GameData.GameDataType.END.equals(gameData.getType())) {
+            player.handleResponse(gameData);
+            gameData = read(is);
+        }
+        if (gameData == null) {
+            logger.error(String.format("Error listening to player '%d' input",player.getId()));
             player.disconnect();
         }
         logger.debug(String.format("Stopped listening to player '%d' input",player.getId()));

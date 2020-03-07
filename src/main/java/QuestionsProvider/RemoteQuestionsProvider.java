@@ -29,8 +29,6 @@ public class RemoteQuestionsProvider implements IQuestionProvider{
                     (conn.getInputStream())));
 
             String output;
-            System.out.println("Output from Server .... \n");
-
             while ((output = br.readLine()) != null) {
                 sb.append(output);
             }

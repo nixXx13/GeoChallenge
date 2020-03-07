@@ -1,5 +1,6 @@
 package GameManager;
 
+import Common.GameData;
 import Common.GameStage;
 import Player.IPlayer;
 import org.apache.log4j.Logger;
@@ -190,6 +191,11 @@ class GameManagerImplTest {
 
         }
 
+        @Override
+        public void ack(String info) {
+
+        }
+
 
         @Override
         public void end(String update) {
@@ -207,7 +213,7 @@ class GameManagerImplTest {
         }
 
         @Override
-        public void handleAnswer(String playerAnswer) {
+        public void handleResponse(GameData gameData) {
         }
 
         @Override

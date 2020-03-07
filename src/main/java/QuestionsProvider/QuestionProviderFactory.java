@@ -12,7 +12,7 @@ public class QuestionProviderFactory {
 
     }
 
-    public static IQuestionProvider getQuestionProvider(QuestionProviderType type){
+    public static IQuestionProvider getQuestionProvider(QuestionProviderType type) throws IOException {
 
         IQuestionProvider questionProvider = null;
 
@@ -28,18 +28,12 @@ public class QuestionProviderFactory {
 
     }
 
-    private static IQuestionProvider createGeoRemote(){
-        IQuestionProvider questionsProvider = null;
-        try {
-            URL url = new URL("http://localhost:5000/data/");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
-            questionsProvider = new RemoteQuestionsProvider(conn);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return questionsProvider;
+    private static IQuestionProvider createGeoRemote() throws IOException {
+        URL url = new URL("http://localhost:5000/data/");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
+        return new RemoteQuestionsProvider(conn);
     }
 
 }
