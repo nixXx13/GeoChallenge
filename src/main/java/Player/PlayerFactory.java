@@ -8,7 +8,7 @@ public class PlayerFactory {
     public IPlayer getPlayer(Socket socket, int id) throws IOException {
 
         ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-        InputStreamReader is = new InputStreamReader(socket.getInputStream());
+        ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 
         PlayerIn playerIn = new PlayerIn(is);
         PlayerOut playerOut = new PlayerOut(os);

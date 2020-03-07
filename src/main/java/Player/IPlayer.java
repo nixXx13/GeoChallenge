@@ -1,5 +1,6 @@
 package Player;
 
+import Common.GameData;
 import GameManager.IGameManager;
 import Common.GameStage;
 
@@ -20,6 +21,6 @@ public interface IPlayer extends Runnable {
     void end(String msg);
     void disconnect();
 
-    void handleAnswer(String playerAnswer);
+    void handleResponse(GameData gameData);
 }
 

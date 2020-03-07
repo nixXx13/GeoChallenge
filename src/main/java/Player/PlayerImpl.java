@@ -1,17 +1,22 @@
 package Player;
 
+import Common.GameData;
 import Common.GameData.GameDataType;
 import GameManager.IGameManager;
 import Common.GameStage;
+import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 
 public class PlayerImpl implements IPlayer,Runnable {
 
     // TODO - add UT
+    final static Logger logger = Logger.getLogger(PlayerImpl.class);
 
     private float score;
     private int id;
+    private String playerName;
     private int questionsAnswered;
     private IGameManager gameManager;
     private List<GameStage> gameStages;
@@ -68,9 +73,18 @@ public class PlayerImpl implements IPlayer,Runnable {
         playerOut.send(GameDataType.UPDATE, update);
     }
 
-    public void handleAnswer(String playerAnswer) {
-        float time = 1;
-        gameManager.receiveAnswer(id,playerAnswer,time);
+    public void handleResponse(GameData gameData) {
+        switch (gameData.getType()) {
+            case DATA:
+                Map<String, String> data = gameData.getContent();
+                float time = Float.valueOf(data.get("time"));
+                String answer = data.get("answer");
+                gameManager.receiveAnswer(id, answer, time);
+                break;
+            default:
+                logger.warn(String.format("Unknown response received from player '%d' - '%s'", id, gameData.toString()));
+                break;
+        }
     }
 
     public void disconnect(){
