@@ -3,6 +3,7 @@ package GameManager;
 import Common.GameData;
 import Common.GameStage;
 import Player.IPlayer;
+import Player.PlayerImpl;
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ class GameManagerImplTest {
 
         List<String> answers = new ArrayList<>();
         answers.add("answer");
-        players.put(playerId1,new BasicPlayerMock(playerId1,answers));
+        players.put(playerId1,new BasicPlayerMock(playerId1,gameStages,answers));
 
         gameManager = new GameManagerImpl(players,gameStages);
 
@@ -66,13 +67,13 @@ class GameManagerImplTest {
         answers1.add("answer2");
         answers1.add("answer3");
 
-        players.put(playerId1,new BasicPlayerMock(playerId1,answers1));
+        players.put(playerId1,new BasicPlayerMock(playerId1,gameStages,answers1));
 
         List<String> answers2 = new ArrayList<>();
         answers2.add("answer111");
         answers2.add("answer2");
         answers2.add("answer111");
-        players.put(playerId2,new BasicPlayerMock(playerId2,answers2));
+        players.put(playerId2,new BasicPlayerMock(playerId2,gameStages,answers2));
 
         gameManager = new GameManagerImpl(players,gameStages);
 
@@ -104,8 +105,8 @@ class GameManagerImplTest {
 
         players = new HashMap<Integer, IPlayer>();
 
-        players.put(playerId1,new BasicPlayerMock(playerId1,answersGood));
-        players.put(playerId2,new BasicPlayerMock(playerId2,answersBad));
+        players.put(playerId1,new BasicPlayerMock(playerId1,gameStages,answersGood));
+        players.put(playerId2,new BasicPlayerMock(playerId2,gameStages,answersBad));
 
         gameManager = new GameManagerImpl(players,gameStages);
 
@@ -155,7 +156,7 @@ class GameManagerImplTest {
         class VerifyEndPlayerMock extends BasicPlayerMock{
 
             public VerifyEndPlayerMock(int playerId, List<String> answers) {
-                super(playerId, answers);
+                super(playerId,gameStages, answers);
             }
             @Override
             public void end(String update) {
@@ -177,11 +178,13 @@ class GameManagerImplTest {
         private int questionAnswered = 0;
         private int playerId;
         private List<String> answers;
+        private List<GameStage> gameStages;
 
-        public BasicPlayerMock(int playerId, List<String> answers){
+        public BasicPlayerMock(int playerId, List<GameStage> gameStages,List<String> answers){
             score = 0f;
             this.playerId = playerId;
             this.answers = answers;
+            this.gameStages = gameStages;
         }
 
         @Override
@@ -199,12 +202,7 @@ class GameManagerImplTest {
 
         @Override
         public void end(String update) {
-//                logger.debug(String.format("received end from game manager - '%s'",update));
 
-//                String updateMsg = String.format(MSG_END,playerId);
-//                if (updateMsg.equals(update)) {
-//                    logger.debug(String.format("received end update is correct"));
-//                }
         }
 
         @Override
@@ -227,18 +225,17 @@ class GameManagerImplTest {
         }
 
         @Override
-        public int getQuestionsAnswered() {
-            return  questionAnswered;
-        }
-
-        @Override
-        public void setQuestionsAnswered(int questionsAnswered) {
-            this.questionAnswered = questionsAnswered;
+        public PlayerImpl.PlayerStatus getStatus() {
+            if (gameStages.size() == questionAnswered){
+                return PlayerImpl.PlayerStatus.FINISHED;
+            }
+            return PlayerImpl.PlayerStatus.ACTIVE;
         }
 
         @Override
         public void grade(float newGrade) {
             score+=newGrade;
+            questionAnswered+=1;
             logger.debug(String.format("new score " + score));
         }
 
@@ -253,7 +250,7 @@ class GameManagerImplTest {
         public void run() {
             logger.debug(String.format("Thread "+ playerId+ " running"));
             while(answerIndex<answers.size()) {
-                gameManager.receiveAnswer(playerId, answers.get(answerIndex), 1);
+                gameManager.receiveAnswer(playerId,gameStages.get(questionAnswered), answers.get(answerIndex), 1);
                 answerIndex += 1;
                 try {
                     Thread.sleep(100);

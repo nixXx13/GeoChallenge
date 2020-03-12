@@ -2,6 +2,7 @@ package GameManager;
 
 import Common.GameStage;
 import Player.IPlayer;
+import Player.PlayerImpl;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -9,9 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class GameManagerImpl implements IGameManager {
-    final static Logger logger = Logger.getLogger(GameManagerImpl.class);
-
-    private int gameRoundsNumber;
+    private final static Logger logger = Logger.getLogger(GameManagerImpl.class);
 
     private Map<Integer,IPlayer> players;
     private List<GameStage> gameStages;
@@ -28,10 +27,7 @@ public class GameManagerImpl implements IGameManager {
         logger.info(String.format("GM%d:initializing game manager with %d players and %d game stages",id,players.size(),gameStages.size()));
         this.players = players;
         this.gameStages = gameStages;
-        gameRoundsNumber = gameStages.size();
         activePlayers=players.size();
-
-
     }
 
     public void startGame(){
@@ -45,34 +41,24 @@ public class GameManagerImpl implements IGameManager {
         }
     }
 
-    public void receiveAnswer(int playerId, String answer, float time){
-        logger.debug(String.format("GM%d,player %d - received answer '%s' in %fs ",id,playerId,answer,time));
+    public void receiveAnswer(int playerId, GameStage gameStage, String answer, float time){
         IPlayer currPlayer = players.get(playerId);
-        int questionsAnswered = currPlayer.getQuestionsAnswered();
 
-        // TODO - remove this to PlayerImpl
-        if (questionsAnswered < gameStages.size()) {
-            // grading answer and sending score
-            GameStage currPlayerGameStage = gameStages.get(questionsAnswered);
-            float answerScore = gradeGameStage(currPlayerGameStage, answer, time);
-            logger.info(String.format("GM%d:player %d - scored '%f' in question #%d",id, currPlayer.getId(), answerScore,questionsAnswered));
-            currPlayer.grade(answerScore);
+        // grading answer and sending score
+        float answerScore = gradeGameStage(gameStage, answer, time);
+        logger.info(String.format("GM%d:player %d - scored '%f' when answering '%s' in question '%s'",id, currPlayer.getId(), answerScore,answer,gameStage.getQuestion()));
+        currPlayer.grade(answerScore);
 
-            // updating player question counter
-            currPlayer.setQuestionsAnswered(++questionsAnswered);
+        // sending updates
+        String updateMsg = String.format(MSG_UPDATE, playerId, answerScore);
+        updateAllPlayers(updateMsg);
 
-            // sending updates
-            String updateMsg = String.format(MSG_UPDATE, playerId, answerScore);
-            updateAllPlayers(updateMsg);
-
-            // checking if player finished game
-            if (questionsAnswered == gameRoundsNumber) {
-                String endMsg = String.format(MSG_END, playerId);
-                logger.debug(String.format("GM%d:player %d - finished answering questions with score %f. Waiting for other players" +
-                        " to finish.", id,currPlayer.getId(),currPlayer.getScore()));
-                currPlayer.update(endMsg);
-                decreaseActivePlayersCounter(playerId);
-            }
+        if (currPlayer.getStatus() == PlayerImpl.PlayerStatus.FINISHED) {
+            String endMsg = String.format(MSG_END, playerId);
+            logger.debug(String.format("GM%d:player %d - finished answering questions with score %f. Waiting for other players" +
+                    " to finish.", id,currPlayer.getId(),currPlayer.getScore()));
+            currPlayer.update(endMsg);
+            decreaseActivePlayersCounter(playerId);
         }
     }
 

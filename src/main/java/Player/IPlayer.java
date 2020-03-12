@@ -8,10 +8,15 @@ import java.util.List;
 
 public interface IPlayer extends Runnable {
 
+    enum PlayerStatus{
+        ACTIVE,
+        FINISHED
+    }
+
     int getId();
     float getScore();
-    int getQuestionsAnswered();
-    void setQuestionsAnswered(int questionsAnswered);
+
+    PlayerStatus getStatus();
 
     void init(IGameManager gameManager, List<GameStage> gameStages);
 
