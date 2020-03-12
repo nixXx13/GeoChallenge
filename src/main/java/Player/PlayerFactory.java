@@ -1,19 +1,15 @@
 package Player;
 
-import java.io.*;
+import Common.NetworkConnectorImpl;
 import java.net.Socket;
 
 public class PlayerFactory {
 
-    public IPlayer getPlayer(Socket socket, int id) throws IOException {
+    public IPlayer getPlayer(Socket socket, int id){
 
-        ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
-
-        PlayerIn playerIn = new PlayerIn(is);
-        PlayerOut playerOut = new PlayerOut(os);
-
-        return new PlayerImpl(id, playerIn, playerOut);
+        NetworkConnectorImpl serverConnector = new NetworkConnectorImpl(socket);
+        serverConnector.init();
+        return new PlayerImpl(id, "player" + id, serverConnector);
 
     }
 

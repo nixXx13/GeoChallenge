@@ -1,10 +1,11 @@
 package Player;
 
-import Common.GameData;
 import Common.GameData.GameDataType;
 import GameManager.IGameManager;
-import Common.GameStage;
 import org.apache.log4j.Logger;
+import Common.GameStage;
+import Common.GameData;
+import Common.INetworkConnector;
 
 import java.util.List;
 import java.util.Map;
@@ -12,26 +13,24 @@ import java.util.Map;
 public class PlayerImpl implements IPlayer,Runnable {
 
     // TODO - add UT
-    final static Logger logger = Logger.getLogger(PlayerImpl.class);
+    private final static Logger logger = Logger.getLogger(PlayerImpl.class);
 
     private float score;
     private int id;
     private String playerName;
-    private int questionsAnswered;
+    private int questionIndex;
     private IGameManager gameManager;
     private List<GameStage> gameStages;
 
-    private PlayerIn playerIn;
-    private PlayerOut playerOut;
+    private INetworkConnector networkConnector;
 
-    public PlayerImpl(int id, PlayerIn playerIn, PlayerOut playerOut){
+    PlayerImpl(int id, String playerName, INetworkConnector networkConnector){
         this.id = id;
-        this.playerIn = playerIn;
-        this.playerOut = playerOut;
+        this.playerName = playerName;
+        this.networkConnector = networkConnector;
         this.score = 0;
-        questionsAnswered = 0;
+        questionIndex = 0;
     }
-
 
     public int getId() {
         return id;
@@ -41,45 +40,47 @@ public class PlayerImpl implements IPlayer,Runnable {
         return score;
     }
 
-    public int getQuestionsAnswered() {
-        return questionsAnswered;
-    }
-
-    @Override
-    public void setQuestionsAnswered(int questionsAnswered) {
-        this.questionsAnswered = questionsAnswered;
-    }
-
     public void init(IGameManager gameManager, List<GameStage> gameStages) {
         this.gameManager = gameManager;
         this.gameStages = gameStages;
     }
 
+    public PlayerStatus getStatus(){
+        if (gameStages.size() == questionIndex){
+            return PlayerStatus.FINISHED;
+        }
+        return PlayerStatus.ACTIVE;
+    }
+
     // acknoledge player that he is connected to server
     public void ack(String info){
-        playerOut.send(GameDataType.ACK,info);
+        networkConnector.send(new GameData(GameDataType.ACK,info));
     }
 
     public void end( String endMsg ) {
-        playerOut.send(GameDataType.END,endMsg);
+        networkConnector.send(new GameData(GameDataType.END,endMsg));
     }
 
     public void grade(float newGrade) {
         this.score += newGrade;
-        playerOut.send(GameDataType.GRADE, String.valueOf(newGrade));
+        questionIndex+=1;
+        networkConnector.send(new GameData(GameDataType.GRADE, String.valueOf(newGrade)));
     }
 
     public void update( String update) {
-        playerOut.send(GameDataType.UPDATE, update);
+        networkConnector.send(new GameData(GameDataType.UPDATE, update));
     }
 
+    // handle response from server
     public void handleResponse(GameData gameData) {
         switch (gameData.getType()) {
             case DATA:
-                Map<String, String> data = gameData.getContent();
-                float time = Float.valueOf(data.get("time"));
-                String answer = data.get("answer");
-                gameManager.receiveAnswer(id, answer, time);
+                if (! (questionIndex < gameStages.size())) {
+                    // TODO - UT this
+                    logger.debug(String.format("Player %s answered all his questions already!",playerName));
+                    break;
+                }
+                handleAnswer(gameData);
                 break;
             default:
                 logger.warn(String.format("Unknown response received from player '%d' - '%s'", id, gameData.toString()));
@@ -92,14 +93,32 @@ public class PlayerImpl implements IPlayer,Runnable {
     }
 
     public void run() {
-        playerOut.send(gameStages);
-        playerIn.setPlayer(this);
-        playerIn.listen();
-
-        // game ended - closing
-        playerOut.close();
-        playerIn.close();
-        // TODO - close socket?
+        networkConnector.send(gameStages);
+        listen();
+        networkConnector.terminate();
     }
 
+    private void handleAnswer(GameData gameData){
+        logger.debug(String.format("Handling answer #%d received from player %s",questionIndex,playerName));
+        Map<String, String> data = gameData.getContent();
+        // TODO - change strings to constants
+        float time = Float.valueOf(data.get("time"));
+        String answer = data.get("answer");
+        gameManager.receiveAnswer(id, gameStages.get(questionIndex), answer, time);
+    }
+
+    private void listen(){
+        logger.debug(String.format("Listening to player '%s' input",playerName));
+
+        GameData gameData = networkConnector.read();
+        while ( gameData != null && !GameData.GameDataType.END.equals(gameData.getType())) {
+            handleResponse(gameData);
+            gameData = networkConnector.read();
+        }
+        if (gameData == null) {
+            logger.error(String.format("Error listening to player '%s' input",playerName));
+            disconnect();
+        }
+        logger.debug(String.format("Stopped listening to player '%s' input",playerName));
+    }
 }
