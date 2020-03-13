@@ -33,7 +33,6 @@ public class Main {
     // create String consts for classes
 
     // create CI pipeline
-
     // create system properties file for port etc
 
     public static void main(String[] args) {

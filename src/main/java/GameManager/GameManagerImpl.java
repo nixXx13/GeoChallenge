@@ -83,13 +83,19 @@ public class GameManagerImpl implements IGameManager {
         // checking if current finishing player is the last player
         if(activePlayers==0){
             logger.info(String.format("GM%d:player %d - last active player. Notifying rest of the players game ended",id,playerId));
-            String summary = "SUMMARY";
+            String summary = getSummary();
             for (Integer cPlayerId : players.keySet()) {
                 IPlayer player = players.get(cPlayerId);
                 logger.trace(String.format("GM%d:player %d - updating with end msg '%s'",id, player.getId(), summary));
                 player.end(summary);
             }
         }
+    }
+
+    private String getSummary(){
+        StringBuilder sb = new StringBuilder();
+        players.forEach((k,v)-> sb.append(v.getName()).append(" - ").append(String.format("%.2f",v.getScore())).append(";"));
+        return sb.toString();
     }
 
     private void updateAllPlayers(String updateMsg){
