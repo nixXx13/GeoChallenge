@@ -36,7 +36,6 @@ public class Main {
 
         try  (ServerSocket ss = new ServerSocket(PORT)){
             logger.info("Server is up!");
-
             boolean run = true;
 
             while (run) {
