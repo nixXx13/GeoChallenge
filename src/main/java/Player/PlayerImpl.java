@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class PlayerImpl implements IPlayer,Runnable {
 
-    // TODO - add UT
     private final static Logger logger = Logger.getLogger(PlayerImpl.class);
 
     private float score;
@@ -38,6 +37,11 @@ public class PlayerImpl implements IPlayer,Runnable {
 
     public float getScore() {
         return score;
+    }
+
+    @Override
+    public String getName() {
+        return playerName;
     }
 
     public void init(IGameManager gameManager, List<GameStage> gameStages) {
@@ -71,7 +75,7 @@ public class PlayerImpl implements IPlayer,Runnable {
         networkConnector.send(new GameData(GameDataType.UPDATE, update));
     }
 
-    // handle response from server
+    // handle response from player
     public void handleResponse(GameData gameData) {
         switch (gameData.getType()) {
             case DATA:

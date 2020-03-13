@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GameManagerImplTest {
 
-    final static Logger logger = Logger.getLogger(GameManagerImplTest.class);
+    private final static Logger logger = Logger.getLogger(GameManagerImplTest.class);
 
     private GameManagerImpl gameManager;
     private HashMap<Integer,IPlayer> players;
@@ -23,7 +23,6 @@ class GameManagerImplTest {
 
     private int endCount = 0;
 
-    // TODO - use UT frameworks for better UTs
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
@@ -222,6 +221,11 @@ class GameManagerImplTest {
         @Override
         public float getScore() {
             return score;
+        }
+
+        @Override
+        public String getName() {
+            return null;
         }
 
         @Override

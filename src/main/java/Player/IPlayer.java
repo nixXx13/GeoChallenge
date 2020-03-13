@@ -15,6 +15,7 @@ public interface IPlayer extends Runnable {
 
     int getId();
     float getScore();
+    String getName();
 
     PlayerStatus getStatus();
 
