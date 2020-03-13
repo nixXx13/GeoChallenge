@@ -24,9 +24,6 @@ public class Main {
     private final static int QUESTIONS_NUMBER = 5;
     private final static int PORT = 8888;
     private final static QuestionProviderType qType = QuestionProviderType.GEO_REMOTE;
-    // ---------------------
-    // Temp  implementation
-    // ---------------------
 
     // TODO see below
     // implement game dispacher
