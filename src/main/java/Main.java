@@ -22,7 +22,7 @@ public class Main {
 
     private final static int PLAYERS_NUM = 1;
     private final static int QUESTIONS_NUMBER = 5;
-    private final static int PORT = 8888;
+    private final static int PORT = 4567;
     private final static QuestionProviderType qType = QuestionProviderType.GEO_REMOTE;
 
     // TODO see below
