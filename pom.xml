@@ -45,6 +45,7 @@
         <dependency>
             <groupId>com.nirose.GeoChallengeClient</groupId>
             <artifactId>GeoChallengeClient</artifactId>
+            <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/dependencies/GeoChallengeClient-1.0.jar</systemPath>
         </dependency>
