@@ -46,7 +46,8 @@ public class GameManagerImpl implements IGameManager {
 
         // grading answer and sending score
         float answerScore = gradeGameStage(gameStage, answer, time);
-        logger.info(String.format("GM%d:player %d - scored '%f' when answering '%s' in question '%s'",id, currPlayer.getId(), answerScore,answer,gameStage.getQuestion()));
+        logger.info(String.format("GM%d:player %d - scored '%f'. '%s', player answer:'%s', answer:'%s'",id,
+                currPlayer.getId(), answerScore,gameStage.getQuestion(),answer,gameStage.getAnswer()));
         currPlayer.grade(answerScore);
 
         // sending updates
@@ -55,7 +56,7 @@ public class GameManagerImpl implements IGameManager {
 
         if (currPlayer.getStatus() == PlayerImpl.PlayerStatus.FINISHED) {
             String endMsg = String.format(MSG_END, playerId);
-            logger.debug(String.format("GM%d:player %d - finished answering questions with score %f. Waiting for other players" +
+            logger.debug(String.format("GM%d:player %d - finished. total score %f. Waiting for other players" +
                     " to finish.", id,currPlayer.getId(),currPlayer.getScore()));
             currPlayer.update(endMsg);
             decreaseActivePlayersCounter(playerId);
