@@ -13,7 +13,6 @@ public interface IPlayer extends Runnable {
         FINISHED
     }
 
-    int getId();
     float getScore();
     String getName();
 
@@ -26,6 +25,7 @@ public interface IPlayer extends Runnable {
     void grade(float newGrade);
     void end(String msg);
     void disconnect();
+    void error(String errorMsg);
 
     void handleResponse(GameData gameData);
 }

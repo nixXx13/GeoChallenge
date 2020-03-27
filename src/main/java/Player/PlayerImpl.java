@@ -15,7 +15,6 @@ public class PlayerImpl implements IPlayer,Runnable {
     private final static Logger logger = Logger.getLogger(PlayerImpl.class);
 
     private float score;
-    private int id;
     private String playerName;
     private int questionIndex;
     private IGameManager gameManager;
@@ -23,16 +22,11 @@ public class PlayerImpl implements IPlayer,Runnable {
 
     private INetworkConnector networkConnector;
 
-    PlayerImpl(int id, String playerName, INetworkConnector networkConnector){
-        this.id = id;
+    PlayerImpl(String playerName, INetworkConnector networkConnector){
         this.playerName = playerName;
         this.networkConnector = networkConnector;
         this.score = 0;
         questionIndex = 0;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public float getScore() {
@@ -65,6 +59,10 @@ public class PlayerImpl implements IPlayer,Runnable {
         networkConnector.send(new GameData(GameDataType.END,endMsg));
     }
 
+    public void error(String errorMsg){
+        networkConnector.send(new GameData(GameDataType.ERROR,errorMsg));
+    }
+
     public void grade(float newGrade) {
         this.score += newGrade;
         questionIndex+=1;
@@ -87,28 +85,30 @@ public class PlayerImpl implements IPlayer,Runnable {
                 handleAnswer(gameData);
                 break;
             default:
-                logger.warn(String.format("Unknown response received from player '%d' - '%s'", id, gameData.toString()));
+                logger.warn(String.format("Unknown response received from player '%s' - '%s'", playerName, gameData.toString()));
                 break;
         }
     }
 
     public void disconnect(){
-        gameManager.receiveDisconnect(id);
+        if(gameManager!=null){
+            gameManager.receiveDisconnect(playerName);
+        }
+        networkConnector.terminate();
     }
 
     public void run() {
         networkConnector.send(gameStages);
         listen();
-        networkConnector.terminate();
     }
 
     private void handleAnswer(GameData gameData){
-        logger.debug(String.format("Handling answer #%d received from player %s",questionIndex,playerName));
+        logger.debug(String.format("Handling answer #%d received from player '%s'",questionIndex,playerName));
         Map<String, String> data = gameData.getContent();
         // TODO - change strings to constants
         float time = Float.valueOf(data.get("time"));
         String answer = data.get("answer");
-        gameManager.receiveAnswer(id, gameStages.get(questionIndex), answer, time);
+        gameManager.receiveAnswer(playerName, gameStages.get(questionIndex), answer, time);
     }
 
     private void listen(){

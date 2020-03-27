@@ -18,7 +18,7 @@ class GameManagerImplTest {
     private final static Logger logger = Logger.getLogger(GameManagerImplTest.class);
 
     private GameManagerImpl gameManager;
-    private HashMap<Integer,IPlayer> players;
+    private HashMap<String,IPlayer> players;
     private List<GameStage> gameStages;
 
     private int endCount = 0;
@@ -31,11 +31,11 @@ class GameManagerImplTest {
     @Test
     void OnePlayerTest() throws InterruptedException {
         logger.info("=========== Starting test OnePlayerTest");
-        int playerId1 = 11;
+        String playerId1 = "p1";
 
         gameStages = new ArrayList<>();
         gameStages.add(new GameStage("q",null,"answer"));
-        players = new HashMap<Integer, IPlayer>();
+        players = new HashMap<String, IPlayer>();
 
         List<String> answers = new ArrayList<>();
         answers.add("answer");
@@ -52,8 +52,8 @@ class GameManagerImplTest {
     @Test
     void TwoPlayersTest() throws InterruptedException {
         logger.info("=========== Starting test TwoPlayersTest");
-        int playerId1 = 11;
-        int playerId2 = 22;
+        String playerId1 = "p1";
+        String playerId2 = "p2";
 
         gameStages = new ArrayList<>();
         gameStages.add(new GameStage("q1",null,"answer1"));
@@ -86,8 +86,8 @@ class GameManagerImplTest {
     @Test
     void manyQuestionsTest() throws InterruptedException {
         logger.info("=========== Starting test OnePlayerTest");
-        int playerId1 = 11;
-        int playerId2 = 22;
+        String playerId1 = "p1";
+        String playerId2 = "p2";
         int qNum = 50;
 
         gameStages = new ArrayList<>();
@@ -102,7 +102,7 @@ class GameManagerImplTest {
             i++;
         }
 
-        players = new HashMap<Integer, IPlayer>();
+        players = new HashMap<>();
 
         players.put(playerId1,new BasicPlayerMock(playerId1,gameStages,answersGood));
         players.put(playerId2,new BasicPlayerMock(playerId2,gameStages,answersBad));
@@ -124,7 +124,6 @@ class GameManagerImplTest {
 
         gameStages = new ArrayList<>();
         List<String> answersGood = new ArrayList<>();
-        List<String> answersBad = new ArrayList<>();
 
         int i = 0;
         while(i<qNum){
@@ -136,31 +135,29 @@ class GameManagerImplTest {
         players = new HashMap<>();
 
         for(i=0;i<playersNum;i++){
-            players.put(i,getVerifyEndMock(i,answersGood));
+            players.put("player"+i,getVerifyEndMock("player"+i,answersGood));
         }
         gameManager = new GameManagerImpl(players,gameStages);
 
         gameManager.startGame();
         Thread.sleep(7000);
         for(i=0;i<playersNum;i++){
-            assertEquals(5,players.get(i).getScore());
+            assertEquals(5,players.get("player"+i).getScore());
         }
         assertEquals(50,endCount);
 
 
     }
 
-    public IPlayer getVerifyEndMock(int playerId, List<String> answers){
+    public IPlayer getVerifyEndMock(String playerId, List<String> answers){
 
         class VerifyEndPlayerMock extends BasicPlayerMock{
 
-            public VerifyEndPlayerMock(int playerId, List<String> answers) {
+            public VerifyEndPlayerMock(String playerId, List<String> answers) {
                 super(playerId,gameStages, answers);
             }
             @Override
             public void end(String update) {
-//                String msg = String.format("game ended properly for %d",getId());
-//                logger.debug(msg);
                 addCount();
             }
         }
@@ -175,11 +172,11 @@ class GameManagerImplTest {
         private int answerIndex = 0;
         private float score;
         private int questionAnswered = 0;
-        private int playerId;
+        private String playerId;
         private List<String> answers;
         private List<GameStage> gameStages;
 
-        public BasicPlayerMock(int playerId, List<GameStage> gameStages,List<String> answers){
+        public BasicPlayerMock(String playerId, List<GameStage> gameStages,List<String> answers){
             score = 0f;
             this.playerId = playerId;
             this.answers = answers;
@@ -188,7 +185,7 @@ class GameManagerImplTest {
 
         @Override
         public void init(IGameManager gameManager, List<GameStage> gameStages) {
-            logger.debug(String.format("player %d started",playerId));
+            logger.debug(String.format("player %s started",playerId));
             this.gameManager = gameManager;
 
         }
@@ -210,12 +207,12 @@ class GameManagerImplTest {
         }
 
         @Override
-        public void handleResponse(GameData gameData) {
+        public void error(String errorMsg) {
+
         }
 
         @Override
-        public int getId() {
-            return playerId;
+        public void handleResponse(GameData gameData) {
         }
 
         @Override

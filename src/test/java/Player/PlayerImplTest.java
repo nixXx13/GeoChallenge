@@ -24,9 +24,8 @@ class PlayerImplTest {
         INetworkConnector nc = getNetworkConnectorMock();
         List<GameStage> gameStages = getGameStages(2);
 
-        int id  = 0;
         String name = "malvo";
-        PlayerImpl player = new PlayerImpl(id,name,nc);
+        PlayerImpl player = new PlayerImpl(name,nc);
 
         IGameManager gameManager = null;
 
@@ -42,9 +41,8 @@ class PlayerImplTest {
         INetworkConnector nc = getNetworkConnectorMock();
         List<GameStage> gameStages = getGameStages(2);
 
-        int id  = 0;
         String name = "lorne";
-        PlayerImpl player = new PlayerImpl(id,name,nc);
+        PlayerImpl player = new PlayerImpl(name,nc);
 
         GameManagerMock gameManager = new GameManagerMock();
 
@@ -73,16 +71,15 @@ class PlayerImplTest {
         when(nc.read()).thenReturn(null);
         when(nc.send(any(List.class))).thenReturn(true);
 
-        int id  = 100;
         String name = "solverson";
-        PlayerImpl player = new PlayerImpl(id,name,nc);
+        PlayerImpl player = new PlayerImpl(name,nc);
 
         GameManagerMock gameManager = new GameManagerMock();
 
         player.init(gameManager,null);
         player.run();
 
-        assertEquals(id,gameManager.getDisconnectId());
+        assertEquals(name,gameManager.getDisconnectName());
     }
 
     private static INetworkConnector getNetworkConnectorMock(){
@@ -104,11 +101,11 @@ class PlayerImplTest {
 
         private List<String> answers;
         private List<Float> answersTime;
-        private int disconnectId;
+        private String disconnectName;
         public GameManagerMock(){
             answers = new ArrayList<>();
             answersTime = new ArrayList<>();
-            disconnectId = -1;
+            disconnectName = "-1";
         }
 
         @Override
@@ -117,14 +114,14 @@ class PlayerImplTest {
         }
 
         @Override
-        public void receiveAnswer(int currPlayerId, GameStage gameStage, String answer, float time) {
+        public void receiveAnswer(String currPlayerId, GameStage gameStage, String answer, float time) {
             answers.add(answer);
             answersTime.add(time);
         }
 
         @Override
-        public void receiveDisconnect(int playerId) {
-            disconnectId = playerId;
+        public void receiveDisconnect(String playerId) {
+            disconnectName = playerId;
         }
 
         public List<String> getAnswers(){
@@ -135,8 +132,8 @@ class PlayerImplTest {
             return answersTime;
         }
 
-        public int getDisconnectId() {
-            return disconnectId;
+        public String getDisconnectName() {
+            return disconnectName;
         }
     }
 

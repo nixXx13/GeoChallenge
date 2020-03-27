@@ -1,26 +1,26 @@
 package QuestionsProvider;
 
+import org.apache.log4j.Logger;
+
+import Common.GameType.GameTypeEnum;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class QuestionProviderFactory {
 
-    public enum QuestionProviderType{
-        LOCAL_TEST,
-        GEO_REMOTE,
+    private final static Logger logger = Logger.getLogger(QuestionProviderFactory.class);
 
-    }
 
-    public static IQuestionProvider getQuestionProvider(QuestionProviderType type) throws IOException {
+    private static IQuestionProvider getQuestionProvider(GameTypeEnum type) throws IOException {
 
         IQuestionProvider questionProvider = null;
 
         switch (type){
-            case LOCAL_TEST:
+            case TEST:
                 questionProvider = new LocalQuestionsProvider();
                 break;
-            case GEO_REMOTE:
+            case GEO:
                 questionProvider = createGeoRemote();
                 break;
         }
@@ -28,12 +28,26 @@ public class QuestionProviderFactory {
 
     }
 
-    private static IQuestionProvider createGeoRemote() throws IOException {
-        URL url = new URL("http://localhost:5000/data/");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Accept", "application/json");
-        return new RemoteQuestionsProvider(conn);
+    private static IQuestionProvider createGeoRemote() {
+        return new RemoteQuestionsProvider();
+    }
+
+
+    // todo - add UT
+    public static Map<GameTypeEnum, IQuestionProvider> getAll() {
+        Map<GameTypeEnum,IQuestionProvider> questionProviders = new HashMap<>();
+        for(GameTypeEnum type: GameTypeEnum.values()){
+            IQuestionProvider questionProvider;
+            try {
+                questionProvider = getQuestionProvider(type);
+            } catch (IOException e) {
+                logger.error(String.format("Failed initializing question provider of type %s",type));
+                e.printStackTrace();
+                continue;
+            }
+            questionProviders.put(type, questionProvider);
+        }
+        return questionProviders;
     }
 
 }
