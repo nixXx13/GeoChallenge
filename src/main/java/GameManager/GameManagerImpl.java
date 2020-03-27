@@ -12,17 +12,17 @@ import java.util.Random;
 public class GameManagerImpl implements IGameManager {
     private final static Logger logger = Logger.getLogger(GameManagerImpl.class);
 
-    private Map<Integer,IPlayer> players;
+    private Map<String,IPlayer> players;
     private List<GameStage> gameStages;
 
     private int activePlayers;
     private int id;
 
-    private final String MSG_UPDATE = "Player %s scored %.2f.";
-    private final String MSG_END    = "Player %s finished game.";
+    private final String MSG_UPDATE = "Player '%s' scored %.2f.";
+    private final String MSG_END    = "Player '%s' finished game.";
 
 
-    public GameManagerImpl(Map<Integer,IPlayer> players, List<GameStage> gameStages){
+    public GameManagerImpl(Map<String,IPlayer> players, List<GameStage> gameStages){
         id = new Random().nextInt(1000);
         logger.info(String.format("GM%d:initializing game manager with %d players and %d game stages",id,players.size(),gameStages.size()));
         this.players = players;
@@ -31,40 +31,40 @@ public class GameManagerImpl implements IGameManager {
     }
 
     public void startGame(){
-        for(Integer playerId : players.keySet()){
-            IPlayer player = players.get(playerId);
+        for(String playerName: players.keySet()){
+            IPlayer player = players.get(playerName);
 
-            logger.info(String.format("GM%d:player %d - starting game for player",id,playerId));
+            logger.info(String.format("GM%d:player '%s' - game starting",id,player.getName()));
             player.init(this, gameStages);
             Thread p = new Thread(player);
             p.start();
         }
     }
 
-    public void receiveAnswer(int playerId, GameStage gameStage, String answer, float time){
-        IPlayer currPlayer = players.get(playerId);
+    public void receiveAnswer(String playerName, GameStage gameStage, String answer, float time){
+        IPlayer currPlayer = players.get(playerName);
 
         // grading answer and sending score
         float answerScore = gradeGameStage(gameStage, answer, time);
-        logger.info(String.format("GM%d:player %d - scored '%f'. '%s', player answer:'%s', answer:'%s'",id,
-                currPlayer.getId(), answerScore,gameStage.getQuestion(),answer,gameStage.getAnswer()));
+        logger.info(String.format("GM%d:'%s' scored '%f'. '%s', player answer:'%s', answer:'%s'",id,
+                currPlayer.getName(), answerScore,gameStage.getQuestion(),answer,gameStage.getAnswer()));
         currPlayer.grade(answerScore);
 
         // sending updates
-        String updateMsg = String.format(MSG_UPDATE, playerId, answerScore);
+        String updateMsg = String.format(MSG_UPDATE, playerName, answerScore);
         updateAllPlayers(updateMsg);
 
         if (currPlayer.getStatus() == PlayerImpl.PlayerStatus.FINISHED) {
-            String endMsg = String.format(MSG_END, playerId);
-            logger.debug(String.format("GM%d:player %d - finished. total score %f. Waiting for other players" +
-                    " to finish.", id,currPlayer.getId(),currPlayer.getScore()));
+            String endMsg = String.format(MSG_END, playerName);
+            logger.debug(String.format("GM%d:'%s' - finished. total score %f. Waiting for other players" +
+                    " to finish.", id,currPlayer.getName(),currPlayer.getScore()));
             currPlayer.update(endMsg);
-            decreaseActivePlayersCounter(playerId);
+            decreaseActivePlayersCounter(playerName);
         }
     }
 
-    public void receiveDisconnect(int playerId){
-        decreaseActivePlayersCounter(playerId);
+    public void receiveDisconnect(String playerName){
+        decreaseActivePlayersCounter(playerName);
     }
 
     private float gradeGameStage(GameStage gameStage, String answer, float time) {
@@ -74,20 +74,20 @@ public class GameManagerImpl implements IGameManager {
         return grade;
     }
 
-    private synchronized void decreaseActivePlayersCounter(int playerId){
+    private synchronized void decreaseActivePlayersCounter(String playerName){
         // TODO - prevent edge case of same player decreasing counter twice
 
         // decreasing active players counter
         activePlayers-=1;
-        logger.debug(String.format("GM%d:player %d - decreased active players number to %d",id,playerId,activePlayers));
+        logger.debug(String.format("GM%d:'%s' - decreased active players number to %d",id,playerName,activePlayers));
 
         // checking if current finishing player is the last player
         if(activePlayers==0){
-            logger.info(String.format("GM%d:player %d - last active player. Notifying rest of the players game ended",id,playerId));
+            logger.info(String.format("GM%d:'%s' - last active player. Notifying rest of the players game ended",id,playerName));
             String summary = getSummary();
-            for (Integer cPlayerId : players.keySet()) {
-                IPlayer player = players.get(cPlayerId);
-                logger.trace(String.format("GM%d:player %d - updating with end msg '%s'",id, player.getId(), summary));
+            for (String cPlayerName : players.keySet()) {
+                IPlayer player = players.get(cPlayerName);
+                logger.trace(String.format("GM%d:'%s' - updating with end msg '%s'",id, player.getName(), summary));
                 player.end(summary);
             }
         }
@@ -100,9 +100,9 @@ public class GameManagerImpl implements IGameManager {
     }
 
     private void updateAllPlayers(String updateMsg){
-        for (Integer playerId : players.keySet()) {
-            IPlayer player = players.get(playerId);
-            logger.trace(String.format("GM%d:updating player %d with update msg '%s'",id ,player.getId(), updateMsg));
+        for (String playerName : players.keySet()) {
+            IPlayer player = players.get(playerName);
+            logger.trace(String.format("GM%d:updating player '%s' with update msg '%s'",id ,player.getName(), updateMsg));
             player.update(updateMsg);
         }
     }

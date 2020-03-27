@@ -1,17 +1,13 @@
 package Player;
 
-import Common.NetworkConnectorImpl;
-import java.net.Socket;
+import Common.INetworkConnector;
+import GameDispatcher.IPlayerConfig;
 
 public class PlayerFactory {
 
-    public IPlayer getPlayer(Socket socket, int id){
-
-        NetworkConnectorImpl serverConnector = new NetworkConnectorImpl(socket);
-        serverConnector.init();
-        return new PlayerImpl(id, "player" + id, serverConnector);
-
+    public static IPlayer getPlayer(INetworkConnector networkConnector, IPlayerConfig playerConfig){
+        String name = playerConfig.getPlayerName();
+        return new PlayerImpl(name, networkConnector);
     }
-
 
 }

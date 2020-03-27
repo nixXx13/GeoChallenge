@@ -6,9 +6,9 @@ public interface IGameManager {
 
         void startGame();
 
-        void receiveAnswer(int currPlayerId, GameStage gameStage, String answer, float time);
+        void receiveAnswer(String playerName, GameStage gameStage, String answer, float time);
 
-        void receiveDisconnect(int playerId);
+        void receiveDisconnect(String playerName);
 }
 
 
