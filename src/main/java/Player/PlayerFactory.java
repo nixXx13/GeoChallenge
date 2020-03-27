@@ -1,16 +1,11 @@
 package Player;
 
-import Common.NetworkConnectorImpl;
-import java.net.Socket;
+import Common.INetworkConnector;
 
 public class PlayerFactory {
 
-    public IPlayer getPlayer(Socket socket, int id){
-
-        NetworkConnectorImpl serverConnector = new NetworkConnectorImpl(socket);
-        serverConnector.init();
-        return new PlayerImpl(id, "player" + id, serverConnector);
-
+    public static IPlayer getPlayer(INetworkConnector networkConnector, int id){
+        return new PlayerImpl(id, "player" + id, networkConnector);
     }
 
 
