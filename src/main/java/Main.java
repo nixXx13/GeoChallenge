@@ -58,6 +58,7 @@ public class Main {
         return toRoomConfig(info);
     }
 
+    // TODO - rewrite this
     private static GameConfigImpl toRoomConfig(GameData gameData){
         String s = gameData.getContent().get("msg");
         String[] attr = s.split(":");

@@ -10,10 +10,8 @@ import QuestionsProvider.IQuestionProvider;
 import Common.GameType.GameTypeEnum;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static GameDispatcher.GameDispatcherUtils.isStringInList;
 
@@ -54,7 +52,7 @@ public class GameDispatcherImpl {
             logger.warn(errorMsg);
             throw new GameRoomException(errorMsg);
         }
-        logger.debug(String.format("Creating room '%s' for '%s'",roomName, roomCreator));
+        logger.info(String.format("Creating room '%s' for '%s'",roomName, roomCreator.getName()));
         GameRoom room = new GameRoom(roomConfig);
         pendingRooms.put(roomName,room);
         joinRoom(roomCreator,roomName);
@@ -73,9 +71,10 @@ public class GameDispatcherImpl {
         synchronized (gameRoom) {
             gameRoom.addPlayer(player);
             logger.debug(String.format("Player '%s' joined room '%s'",player.getName(),roomName));
-            player.ack("connected");
+            player.ack("connected " + roomName);
             if (gameRoom.isFull()) {
-                logger.debug(String.format("Room '%s' is full. starting game",roomName));
+                String playersNames = gameRoom.getPlayers().stream().map(IPlayer::getName).collect(Collectors.toList()).toString();
+                logger.info(String.format("Room '%s' is now full. starting game with players '%s'",roomName,playersNames));
                 startGame(gameRoom);
                 pendingRooms.remove(gameRoom.getName());
             }
