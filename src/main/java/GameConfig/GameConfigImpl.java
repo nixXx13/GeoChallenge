@@ -1,12 +1,8 @@
-package GameDispatcher;
+package GameConfig;
 
 import Common.GameType.GameTypeEnum;
 
 public class GameConfigImpl implements IRoomConfig,IPlayerConfig{
-
-    private static final int DEFAULT_ROOM_SIZE = 2;
-    private static final int DEFAULT_QUESTION_NUMBER = 5;
-    private static final GameTypeEnum DEFAULT_ROOM_TYPE = GameTypeEnum.TEST;
 
     private String playerName;
     private boolean isCreate;

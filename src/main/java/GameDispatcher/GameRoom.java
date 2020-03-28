@@ -1,8 +1,8 @@
 package GameDispatcher;
 
+import GameConfig.IRoomConfig;
+import GameExceptions.GameConfigException;
 import GameExceptions.GameException;
-import GameExceptions.GameNameException;
-import GameExceptions.GameRoomException;
 import Common.GameType.GameTypeEnum;
 import Player.IPlayer;
 
@@ -34,12 +34,12 @@ public class GameRoom {
 
     public void addPlayer(IPlayer player) throws GameException {
         if (isFull()){
-            throw new GameRoomException("Room is full");
+            throw new GameConfigException("Room is full");
         }
         String playerName = player.getName();
         if (doesNameExists(playerName)){
             // name already exists in room
-            throw new GameNameException(String.format("Player name '%s' is already taken",playerName));
+            throw new GameConfigException(String.format("Player name '%s' is already taken",playerName));
         }
         players.add(player);
     }

@@ -1,7 +1,7 @@
 package Player;
 
 import Common.INetworkConnector;
-import GameDispatcher.IPlayerConfig;
+import GameConfig.IPlayerConfig;
 
 public class PlayerFactory {
 

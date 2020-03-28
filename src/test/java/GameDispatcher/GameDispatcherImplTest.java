@@ -4,6 +4,8 @@ import Common.GameData;
 import Common.GameStage;
 import Common.GameType;
 
+import GameConfig.GameConfigImpl;
+import GameConfig.IRoomConfig;
 import GameManager.IGameManager;
 import Player.IPlayer;
 import QuestionsProvider.IQuestionProvider;
