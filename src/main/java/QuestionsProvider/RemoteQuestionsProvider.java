@@ -16,7 +16,8 @@ public class RemoteQuestionsProvider implements IQuestionProvider{
     public List<GameStage> getQuestions(int num){
         StringBuilder sb = new StringBuilder("");
         try {
-            URL url = new URL("http://localhost:500/data/");
+//            URL url = new URL("http://localhost:500/data/");
+            URL url = new URL("http://172.18.0.2:500/data/");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");

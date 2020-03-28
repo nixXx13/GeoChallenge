@@ -77,7 +77,7 @@ class GameDispatcherImplTest {
             pt.start();
         }
         Thread.sleep(1000);
-        String ackMsg = "connected " + "0";
+        String ackMsg = "entered " + "0";
         int ackedPlayers = 0;
         for(PlayerMock pm: joinPlayers){
             if(pm.getAckList().size()>0 && pm.getAckList().get(0).equals(ackMsg)){
@@ -131,7 +131,7 @@ class GameDispatcherImplTest {
         Thread.sleep(5*1000);
         Map<String,Integer> roomJoins = new HashMap<>();
         for(int k=0;k<roomsNumber;k++){
-            roomJoins.put("connected "+k,0);
+            roomJoins.put("entered "+k,0);
         }
         for(PlayerMock pm: joinPlayers){
             if(pm.getAckList().size()>0) {

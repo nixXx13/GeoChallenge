@@ -72,7 +72,7 @@ public class GameDispatcherImpl implements IGameDispacher{
         synchronized (gameRoom) {
             gameRoom.addPlayer(player);
             logger.debug(String.format("Player '%s' joined room '%s'",player.getName(),roomName));
-            player.ack("connected " + roomName);
+            player.ack("entered " + roomName);
             if (gameRoom.isFull()) {
                 String playersNames = gameRoom.getPlayers().stream().map(IPlayer::getName).collect(Collectors.toList()).toString();
                 logger.info(String.format("Room '%s' is now full. starting game with players '%s'",roomName,playersNames));
