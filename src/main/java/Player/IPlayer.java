@@ -15,7 +15,6 @@ public interface IPlayer extends Runnable {
 
     float getScore();
     String getName();
-
     PlayerStatus getStatus();
 
     void init(IGameManager gameManager, List<GameStage> gameStages);

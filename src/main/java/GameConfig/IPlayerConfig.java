@@ -1,4 +1,4 @@
-package GameDispatcher;
+package GameConfig;
 
 public interface IPlayerConfig {
 

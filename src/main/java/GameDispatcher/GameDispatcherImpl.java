@@ -1,8 +1,9 @@
 package GameDispatcher;
 
 import Common.GameStage;
+import GameConfig.IRoomConfig;
+import GameExceptions.GameConfigException;
 import GameExceptions.GameException;
-import GameExceptions.GameRoomException;
 import GameManager.GameManagerFactory;
 import GameManager.IGameManager;
 import Player.IPlayer;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static GameDispatcher.GameDispatcherUtils.isStringInList;
 
-public class GameDispatcherImpl {
+public class GameDispatcherImpl implements IGameDispacher{
     private final static Logger logger = Logger.getLogger(GameDispatcherImpl.class);
 
     private Map<GameTypeEnum, IQuestionProvider> questionProviders;
@@ -50,7 +51,7 @@ public class GameDispatcherImpl {
         if (doesRoomExists(roomName)){
             String errorMsg = String.format("Room '%s' already exists",roomName);
             logger.warn(errorMsg);
-            throw new GameRoomException(errorMsg);
+            throw new GameConfigException(errorMsg);
         }
         logger.info(String.format("Creating room '%s' for '%s'",roomName, roomCreator.getName()));
         GameRoom room = new GameRoom(roomConfig);
@@ -64,7 +65,7 @@ public class GameDispatcherImpl {
         if (gameRoom == null){
             String errorMsg = String.format("Room '%s' doesn't exists",roomName);
             logger.warn(errorMsg);
-            throw new GameRoomException(errorMsg);
+            throw new GameConfigException(errorMsg);
         }
 
         // make sure two threads arent editing same room

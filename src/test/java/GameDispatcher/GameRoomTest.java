@@ -1,9 +1,9 @@
 package GameDispatcher;
 
 import Common.GameType;
+import GameConfig.GameConfigImpl;
+import GameExceptions.GameConfigException;
 import GameExceptions.GameException;
-import GameExceptions.GameNameException;
-import GameExceptions.GameRoomException;
 import Player.IPlayer;
 import Player.PlayerFactory;
 import org.apache.log4j.Logger;
@@ -31,7 +31,7 @@ class GameRoomTest {
         try{
             room.addPlayer(getPlayer());
             room.addPlayer(getPlayer());
-        }catch (GameRoomException e){
+        }catch (GameConfigException e){
             logger.debug("Room is full");
         }
     }
@@ -45,7 +45,7 @@ class GameRoomTest {
         try{
             room.addPlayer(getPlayer());
             room.addPlayer(getPlayer());
-        }catch (GameNameException e){
+        }catch (GameConfigException e){
             logger.debug("Player with same name already exists in room");
         }
     }
