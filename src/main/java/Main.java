@@ -18,9 +18,7 @@ public class Main {
     private final static int PORT = 4567;
 
     // TODO see below
-
     // create system properties file for port etc and docker ip
-    // lambda to send server ip
 
     public static void main(String[] args) {
 

@@ -13,11 +13,16 @@ import java.util.List;
 
 public class RemoteQuestionsProvider implements IQuestionProvider{
 
+    private String url;
+
+    RemoteQuestionsProvider(String url){
+        this.url = url;
+    }
+
     public List<GameStage> getQuestions(int num){
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         try {
-//            URL url = new URL("http://localhost:500/data/");
-            URL url = new URL("http://172.18.0.2:500/data/");
+            URL url = new URL(this.url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
