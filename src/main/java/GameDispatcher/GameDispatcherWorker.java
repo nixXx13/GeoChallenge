@@ -63,8 +63,9 @@ public class GameDispatcherWorker implements Runnable {
             boolean isCreate = Boolean.valueOf(attr[2]);
             int size = Integer.valueOf(attr[3]);
             int questionsNumber = Integer.valueOf(attr[4]);
+            String gameTypeStr = attr[5];
             logger.debug(String.format("Got connection with the following preferences: roomName - %s, create room - %b, room size - %d, question number - %d", roomName, isCreate, size, questionsNumber));
-            return gameConfigFactory.getGameConfig(playerName, roomName, isCreate, size, questionsNumber, GameType.GameTypeEnum.GEO);
+            return gameConfigFactory.getGameConfig(playerName, roomName, isCreate, size, questionsNumber, stringToGameType(gameTypeStr));
         }catch (GameConfigException ge) {
             // input validation exceptions
             logger.error(ge.getMessage());
@@ -75,5 +76,16 @@ public class GameDispatcherWorker implements Runnable {
             logger.error(String.format("Failed parsing players configuration - %s",gameData));
             throw new GameConfigException("Player configuration given are invalid");
         }
+    }
+
+    private GameType.GameTypeEnum stringToGameType(String gameTypeStr) {
+        gameTypeStr = gameTypeStr.toLowerCase();
+        if (gameTypeStr.contains("math")) {
+            return GameType.GameTypeEnum.MATH;
+        }
+        if (gameTypeStr.contains("geo")) {
+            return GameType.GameTypeEnum.GEO;
+        }
+        return GameType.GameTypeEnum.TEST;
     }
 }
