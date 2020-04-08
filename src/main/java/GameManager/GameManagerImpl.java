@@ -85,6 +85,7 @@ public class GameManagerImpl implements IGameManager {
         if(activePlayers==0){
             logger.info(String.format("GM%d:'%s' - last active player. Notifying rest of the players game ended",id,playerName));
             String summary = getSummary();
+            // TODO - update scores service
             for (String cPlayerName : players.keySet()) {
                 IPlayer player = players.get(cPlayerName);
                 logger.trace(String.format("GM%d:'%s' - updating with end msg '%s'",id, player.getName(), summary));
