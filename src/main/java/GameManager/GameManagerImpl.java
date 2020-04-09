@@ -1,10 +1,13 @@
 package GameManager;
 
 import Common.GameStage;
+import Common.GameType.GameTypeEnum;
 import Player.IPlayer;
 import Player.PlayerImpl;
+import Util.RestUtil;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,6 +17,7 @@ public class GameManagerImpl implements IGameManager {
 
     private Map<String,IPlayer> players;
     private List<GameStage> gameStages;
+    private GameTypeEnum gameType;
 
     private int activePlayers;
     private int id;
@@ -21,13 +25,16 @@ public class GameManagerImpl implements IGameManager {
     private final String MSG_UPDATE = "Player '%s' scored %.2f.";
     private final String MSG_END    = "Player '%s' finished game.";
 
+    private final String SCORES_SERVICE_URL_FORMAT = "172.18.0.3:600/data/set_%s/";
 
-    public GameManagerImpl(Map<String,IPlayer> players, List<GameStage> gameStages){
+
+    public GameManagerImpl(Map<String,IPlayer> players, List<GameStage> gameStages, GameTypeEnum gameType){
         id = new Random().nextInt(1000);
         logger.info(String.format("GM%d:initializing game manager with %d players and %d game stages",id,players.size(),gameStages.size()));
         this.players = players;
         this.gameStages = gameStages;
         activePlayers=players.size();
+        this.gameType = gameType;
     }
 
     public void startGame(){
@@ -85,11 +92,14 @@ public class GameManagerImpl implements IGameManager {
         if(activePlayers==0){
             logger.info(String.format("GM%d:'%s' - last active player. Notifying rest of the players game ended",id,playerName));
             String summary = getSummary();
-            // TODO - update scores service
+
+            String bestScores = getBestScores(summary, gameType);
+
             for (String cPlayerName : players.keySet()) {
                 IPlayer player = players.get(cPlayerName);
                 logger.trace(String.format("GM%d:'%s' - updating with end msg '%s'",id, player.getName(), summary));
-                player.end(summary);
+                // todo - fix shortcut
+                player.end(summary + "&" + bestScores);
             }
         }
     }
@@ -98,6 +108,23 @@ public class GameManagerImpl implements IGameManager {
         StringBuilder sb = new StringBuilder();
         players.forEach((k,v)-> sb.append(v.getName()).append(" - ").append(String.format("%.2f",v.getScore())).append(";"));
         return sb.toString();
+    }
+
+    private String getBestScores(String gameScores, GameTypeEnum gameType){
+        String gameTypeStr = "geo";
+        if (gameType.equals(GameTypeEnum.MATH)){
+            gameTypeStr = "math";
+        }
+        String fSummary = gameScores.replace(" - ", ":").replace(";",",");
+        String url = String.format(SCORES_SERVICE_URL_FORMAT,gameTypeStr);
+        String bestScores = "";
+        try {
+            bestScores = RestUtil.post(url,fSummary);
+        } catch (IOException e) {
+            logger.debug(String.format("Failed fetching best scores for game type %s",gameType.toString()));
+            e.printStackTrace();
+        }
+        return bestScores;
     }
 
     private void updateAllPlayers(String updateMsg){

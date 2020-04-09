@@ -2,6 +2,7 @@ package GameManager;
 
 import Common.GameData;
 import Common.GameStage;
+import Common.GameType;
 import Player.IPlayer;
 import Player.PlayerImpl;
 import org.apache.log4j.Logger;
@@ -41,7 +42,7 @@ class GameManagerImplTest {
         answers.add("answer");
         players.put(playerId1,new BasicPlayerMock(playerId1,gameStages,answers));
 
-        gameManager = new GameManagerImpl(players,gameStages);
+        gameManager = new GameManagerImpl(players,gameStages, GameType.GameTypeEnum.TEST);
 
         gameManager.startGame();
         Thread.sleep(1000);
@@ -74,7 +75,7 @@ class GameManagerImplTest {
         answers2.add("answer111");
         players.put(playerId2,new BasicPlayerMock(playerId2,gameStages,answers2));
 
-        gameManager = new GameManagerImpl(players,gameStages);
+        gameManager = new GameManagerImpl(players,gameStages, GameType.GameTypeEnum.TEST);
 
         gameManager.startGame();
         Thread.sleep(1000);
@@ -107,7 +108,7 @@ class GameManagerImplTest {
         players.put(playerId1,new BasicPlayerMock(playerId1,gameStages,answersGood));
         players.put(playerId2,new BasicPlayerMock(playerId2,gameStages,answersBad));
 
-        gameManager = new GameManagerImpl(players,gameStages);
+        gameManager = new GameManagerImpl(players,gameStages, GameType.GameTypeEnum.TEST);
 
         gameManager.startGame();
         Thread.sleep(7000);
@@ -137,7 +138,7 @@ class GameManagerImplTest {
         for(i=0;i<playersNum;i++){
             players.put("player"+i,getVerifyEndMock("player"+i,answersGood));
         }
-        gameManager = new GameManagerImpl(players,gameStages);
+        gameManager = new GameManagerImpl(players,gameStages, GameType.GameTypeEnum.TEST);
 
         gameManager.startGame();
         Thread.sleep(7000);
