@@ -25,7 +25,7 @@ public class GameManagerImpl implements IGameManager {
     private final String MSG_UPDATE = "Player '%s' scored %.2f.";
     private final String MSG_END    = "Player '%s' finished game.";
 
-    private final String SCORES_SERVICE_URL_FORMAT = "172.18.0.3:600/data/set_%s/";
+    private final String SCORES_SERVICE_URL_FORMAT = "http://172.18.0.3:600/data/set_%s/";
 
 
     public GameManagerImpl(Map<String,IPlayer> players, List<GameStage> gameStages, GameTypeEnum gameType){
