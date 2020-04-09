@@ -84,10 +84,12 @@ public class GameDispatcherImpl implements IGameDispacher{
     }
 
     private void startGame(GameRoom gameRoom){
-        IQuestionProvider questionProvider = questionProviders.get(gameRoom.getType());
+        GameTypeEnum gameType = gameRoom.getType();
+        IQuestionProvider questionProvider = questionProviders.get(gameType);
         List<GameStage> questions = questionProvider.getQuestions(gameRoom.getQuestionsNumber());
 
-        IGameManager gameManager = GameManagerFactory.getGameManager(gameRoom, questions);
+        // todo - if questions are empty??
+        IGameManager gameManager = GameManagerFactory.getGameManager(gameRoom, questions, gameType);
         gameManager.startGame();
     }
 
