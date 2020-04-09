@@ -67,9 +67,10 @@ def user_score_pair_string_to_lists(user_score_pair_string):
     score_list = []
 
     for pair in user_score_pairs:
-        user,score = pair.split(":")
-        user_list.append(user)
-        score_list.append(float(score))
+        if pair != "":
+            user,score = pair.split(":")
+            user_list.append(user)
+            score_list.append(float(score))
 
     return user_list, score_list
 
