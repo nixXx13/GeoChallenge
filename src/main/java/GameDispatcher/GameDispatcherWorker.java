@@ -87,7 +87,7 @@ public class GameDispatcherWorker implements Runnable {
 
     public static boolean isStringOnlyAlphabet(String str)
     {
-        return ((str != null) && (!str.equals("")) && (str.matches("^[a-zA-Z1-9]*$")));
+        return ((str != null) && (!str.equals("")) && (str.matches("^[a-zA-Z1-9 ]*$")));
     }
 
     private GameType.GameTypeEnum stringToGameType(String gameTypeStr) {
