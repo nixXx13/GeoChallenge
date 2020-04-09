@@ -59,7 +59,13 @@ public class GameDispatcherWorker implements Runnable {
             String s = gameData.getContent().get("msg");
             String[] attr = s.split(":");
             String playerName = attr[0];
+            if (!isStringOnlyAlphabet(playerName)){
+                throw new GameConfigException("Invalid character in player name");
+            }
             String roomName = attr[1];
+            if(!isStringOnlyAlphabet(roomName)){
+                throw new GameConfigException("Invalid character in room name");
+            }
             boolean isCreate = Boolean.valueOf(attr[2]);
             int size = Integer.valueOf(attr[3]);
             int questionsNumber = Integer.valueOf(attr[4]);
@@ -76,6 +82,12 @@ public class GameDispatcherWorker implements Runnable {
             logger.error(String.format("Failed parsing players configuration - %s",gameData));
             throw new GameConfigException("Player configuration given are invalid");
         }
+    }
+
+
+    public static boolean isStringOnlyAlphabet(String str)
+    {
+        return ((str != null) && (!str.equals("")) && (str.matches("^[a-zA-Z1-9]*$")));
     }
 
     private GameType.GameTypeEnum stringToGameType(String gameTypeStr) {
