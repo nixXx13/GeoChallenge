@@ -1,5 +1,6 @@
 package QuestionsProvider;
 
+import Util.Constants;
 import org.apache.log4j.Logger;
 
 import Common.GameType.GameTypeEnum;
@@ -12,9 +13,8 @@ public class QuestionProviderFactory {
 
     private static IQuestionProvider getQuestionProvider(GameTypeEnum type){
 
-        // todo - get from prop file
-        String dockerIp = "172.18.0.2";
-        int dockerPort = 500;
+        String dockerIp = Constants.QUESTION_PROVIDER_DOCKER_IP;
+        int dockerPort = Constants.QUESTION_PROVIDER_DOCKER_PORT;
 
         IQuestionProvider questionProvider = null;
 

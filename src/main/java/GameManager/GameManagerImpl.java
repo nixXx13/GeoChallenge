@@ -4,10 +4,13 @@ import Common.GameStage;
 import Common.GameType.GameTypeEnum;
 import Player.IPlayer;
 import Player.PlayerImpl;
+import Util.Constants;
 import Util.RestUtil;
+import com.google.gson.Gson;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -24,9 +27,6 @@ public class GameManagerImpl implements IGameManager {
 
     private final String MSG_UPDATE = "Player '%s' scored %.2f.";
     private final String MSG_END    = "Player '%s' finished game.";
-
-    private final String SCORES_SERVICE_URL_FORMAT = "http://172.18.0.3:600/data/set_%s/";
-
 
     public GameManagerImpl(Map<String,IPlayer> players, List<GameStage> gameStages, GameTypeEnum gameType){
         id = new Random().nextInt(1000);
@@ -98,7 +98,7 @@ public class GameManagerImpl implements IGameManager {
             for (String cPlayerName : players.keySet()) {
                 IPlayer player = players.get(cPlayerName);
                 logger.trace(String.format("GM%d:'%s' - updating with end msg '%s'",id, player.getName(), summary));
-                // todo - fix shortcut
+                // TODO - fix shortcut
                 player.end(summary + "&" + bestScores);
             }
         }
@@ -111,20 +111,26 @@ public class GameManagerImpl implements IGameManager {
     }
 
     private String getBestScores(String gameScores, GameTypeEnum gameType){
+        // TODO - implement game type in lambda
         String gameTypeStr = "geo";
         if (gameType.equals(GameTypeEnum.MATH)){
             gameTypeStr = "math";
         }
-        String fSummary = gameScores.replace(" - ", ":").replace(";",",");
-        String url = String.format(SCORES_SERVICE_URL_FORMAT,gameTypeStr);
-        String bestScores = "";
+
+        // preparing scores dict for best scores service
+        HashMap<String,Float> scoresMap = new HashMap<>();
+        players.forEach((k,v)-> scoresMap.put(k,v.getScore()));
+        Gson gson = new Gson();
+        String jsonScores = gson.toJson(scoresMap);
+
+        String bestScoresJson = "";
         try {
-            bestScores = RestUtil.post(url,fSummary);
+            bestScoresJson = RestUtil.post(Constants.SCORES_SERVICE_URL,jsonScores);
         } catch (IOException e) {
             logger.debug(String.format("Failed fetching best scores for game type %s",gameType.toString()));
             e.printStackTrace();
         }
-        return bestScores;
+        return bestScoresJson;
     }
 
     private void updateAllPlayers(String updateMsg){
