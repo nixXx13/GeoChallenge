@@ -7,22 +7,17 @@ import java.nio.charset.StandardCharsets;
 
 public class RestUtil {
 
-    public static String post(String strUrl, String strToSend) throws IOException {
-        String urlParameters  = String.format("body=%s",strToSend);
-        byte[] postData       = urlParameters.getBytes( StandardCharsets.UTF_8 );
-        int    postDataLength = postData.length;
-//        String request        = "http://localhost:600/data/set_geo/";
+    public static String post(String strUrl, String json) throws IOException {
         URL url            = new URL( strUrl );
         HttpURLConnection conn= (HttpURLConnection) url.openConnection();
         conn.setDoOutput( true );
         conn.setInstanceFollowRedirects( false );
         conn.setRequestMethod( "POST" );
-        conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty( "Content-Type", "application/json");
         conn.setRequestProperty( "charset", "utf-8");
-        conn.setRequestProperty( "Content-Length", Integer.toString( postDataLength ));
         conn.setUseCaches( false );
         try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
-            wr.write( postData );
+            wr.write( json.getBytes(StandardCharsets.UTF_8) );
             wr.flush();
             InputStream in = new BufferedInputStream(conn.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));

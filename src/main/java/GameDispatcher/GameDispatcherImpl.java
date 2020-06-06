@@ -43,7 +43,7 @@ public class GameDispatcherImpl implements IGameDispacher{
         }
     }
 
-    // todo - rethink synchronization and possible bottlenecks
+    // TODO - rethink synchronization and possible bottlenecks
     // read about hash map and concurrency
 
     private synchronized void createRoom(IPlayer roomCreator, IRoomConfig roomConfig) throws GameException {
@@ -74,6 +74,7 @@ public class GameDispatcherImpl implements IGameDispacher{
             logger.debug(String.format("Player '%s' joined room '%s'",player.getName(),roomName));
             player.ack("entered " + roomName);
             if (gameRoom.isFull()) {
+                // TODO - fetch question here instead of start game.if questions are empty. gameRoom.getPlayers , for each player player.error
                 String playersNames = gameRoom.getPlayers().stream().map(IPlayer::getName).collect(Collectors.toList()).toString();
                 logger.info(String.format("Room '%s' is now full. starting game with players '%s'",roomName,playersNames));
                 startGame(gameRoom);
@@ -88,7 +89,6 @@ public class GameDispatcherImpl implements IGameDispacher{
         IQuestionProvider questionProvider = questionProviders.get(gameType);
         List<GameStage> questions = questionProvider.getQuestions(gameRoom.getQuestionsNumber());
 
-        // todo - if questions are empty??
         IGameManager gameManager = GameManagerFactory.getGameManager(gameRoom, questions, gameType);
         gameManager.startGame();
     }

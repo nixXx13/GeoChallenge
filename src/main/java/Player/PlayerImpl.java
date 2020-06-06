@@ -78,7 +78,6 @@ public class PlayerImpl implements IPlayer,Runnable {
         switch (gameData.getType()) {
             case DATA:
                 if (! (questionIndex < gameStages.size())) {
-                    // TODO - UT this
                     logger.debug(String.format("Player %s answered all his questions already!",playerName));
                     break;
                 }
